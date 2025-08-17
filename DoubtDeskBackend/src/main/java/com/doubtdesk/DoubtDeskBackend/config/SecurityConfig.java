@@ -42,8 +42,12 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // আপনার ফ্রন্টএন্ডের URL
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000"));
+        // আপনার ফ্রন্টএন্ডের URL যোগ করা হয়েছে
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173",
+                "http://localhost:3000",
+                "http://doubtdesk-frontend-cuet-170825.s3-website.ap-south-1.amazonaws.com" // আপনার S3 URL
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*")); // সব হেডারকে অনুমতি দেওয়া হলো
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

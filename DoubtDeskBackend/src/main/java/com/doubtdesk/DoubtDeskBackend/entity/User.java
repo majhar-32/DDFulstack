@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 // @Inheritance(strategy = InheritanceType.JOINED) <-- এই লাইনটি মুছে ফেলা হয়েছে
 public class User {
 
