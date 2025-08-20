@@ -30,7 +30,7 @@ const AdminLoginPage = ({ setCurrentPage, setLoggedInUser }) => {
         });
         setTimeout(() => {
           setCurrentPage("admin-dashboard");
-        }, 1500);
+        }, 0);
       } else {
         setError("This is not a valid admin account.");
       }

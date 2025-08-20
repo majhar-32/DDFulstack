@@ -47,7 +47,7 @@ const StudentLoginPage = ({
           } else {
             setCurrentPage("student-dashboard");
           }
-        }, 1500);
+        }, 0);
       } else {
         setError("This is not a valid student account.");
         setIsSubmitted(false);

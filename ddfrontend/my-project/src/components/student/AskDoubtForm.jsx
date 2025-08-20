@@ -151,7 +151,7 @@ const AskDoubtForm = ({
         setIsPosted(true);
         setTimeout(() => {
           setCurrentPage("student-dashboard");
-        }, 1500);
+        }, 0);
       }
     } catch (err) {
       setError("Failed to post your doubt. Please try again.");

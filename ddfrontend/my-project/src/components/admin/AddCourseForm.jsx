@@ -52,7 +52,7 @@ const AddCourseForm = ({ setCurrentPage }) => {
         setIsSubmitted(true);
         setTimeout(() => {
           setCurrentPage("admin-courses");
-        }, 1500);
+        }, 0);
       } catch (error) {
         console.error("Failed to add course:", error);
         setErrors({

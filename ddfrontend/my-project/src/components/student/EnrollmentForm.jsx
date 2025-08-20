@@ -51,7 +51,7 @@ const EnrollmentForm = ({ courseName, setCurrentPage, loggedInUser }) => {
 
         setTimeout(() => {
           setCurrentPage("student-dashboard");
-        }, 2000);
+        }, 0);
       } catch (error) {
         // সার্ভার থেকে এরর আসলে
         setErrors({

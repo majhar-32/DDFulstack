@@ -232,172 +232,235 @@ const App = () => {
           </main>
         );
 
-      // --- বাকি সব case অপরিবর্তিত থাকবে ---
       case "teacher-registration":
-        return <TeacherRegistrationForm setCurrentPage={setCurrentPage} />;
+        return (
+          <main className="flex-grow">
+            <TeacherRegistrationForm setCurrentPage={setCurrentPage} />
+          </main>
+        );
       case "student-registration":
-        return <StudentRegistrationForm setCurrentPage={setCurrentPage} />;
+        return (
+          <main className="flex-grow">
+            <StudentRegistrationForm setCurrentPage={setCurrentPage} />
+          </main>
+        );
       case "admin-registration":
-        return <AdminRegistrationForm setCurrentPage={setCurrentPage} />;
+        return (
+          <main className="flex-grow">
+            <AdminRegistrationForm setCurrentPage={setCurrentPage} />
+          </main>
+        );
       case "student-login":
         return (
-          <StudentLoginPage
-            setCurrentPage={setCurrentPage}
-            setLoggedInUser={setLoggedInUser}
-          />
+          <main className="flex-grow">
+            <StudentLoginPage
+              setCurrentPage={setCurrentPage}
+              setLoggedInUser={setLoggedInUser}
+            />
+          </main>
         );
       case "student-login-for-enroll":
         return (
-          <StudentLoginPage
-            setCurrentPage={(page) => {
-              if (page === "student-dashboard") {
-                setCurrentPage("enrollment-form");
-              } else {
-                setCurrentPage(page);
-              }
-            }}
-            setLoggedInUser={setLoggedInUser}
-            isEnrollmentFlow={true}
-          />
+          <main className="flex-grow">
+            <StudentLoginPage
+              setCurrentPage={(page) => {
+                if (page === "student-dashboard") {
+                  setCurrentPage("enrollment-form");
+                } else {
+                  setCurrentPage(page);
+                }
+              }}
+              setLoggedInUser={setLoggedInUser}
+              isEnrollmentFlow={true}
+            />
+          </main>
         );
       case "teacher-login":
         return (
-          <TeacherLoginPage
-            setCurrentPage={setCurrentPage}
-            setLoggedInUser={setLoggedInUser}
-          />
+          <main className="flex-grow">
+            <TeacherLoginPage
+              setCurrentPage={setCurrentPage}
+              setLoggedInUser={setLoggedInUser}
+            />
+          </main>
         );
       case "admin-login":
         return (
-          <AdminLoginPage
-            setCurrentPage={setCurrentPage}
-            setLoggedInUser={setLoggedInUser}
-          />
+          <main className="flex-grow">
+            <AdminLoginPage
+              setCurrentPage={setCurrentPage}
+              setLoggedInUser={setLoggedInUser}
+            />
+          </main>
         );
       case "student-dashboard":
         return (
-          <StudentDashboard
-            setCurrentPage={setCurrentPage}
-            setSelectedCourseForSubjects={setSelectedCourseForSubjects}
-            loggedInUser={loggedInUser}
-            setIsCoursesOnlyView={setIsCoursesOnlyView}
-          />
+          <main className="flex-grow">
+            <StudentDashboard
+              setCurrentPage={setCurrentPage}
+              setSelectedCourseForSubjects={setSelectedCourseForSubjects}
+              loggedInUser={loggedInUser}
+              setIsCoursesOnlyView={setIsCoursesOnlyView}
+            />
+          </main>
         );
       case "teacher-dashboard-pending":
         return (
-          <PendingQuestionsDashboard
-            setCurrentPage={setCurrentPage}
-            loggedInUser={loggedInUser}
-            addNotification={addNotification}
-            highlightQuestionId={highlightQuestionId}
-            setHighlightQuestionId={setHighlightQuestionId}
-          />
+          <main className="flex-grow">
+            <PendingQuestionsDashboard
+              setCurrentPage={setCurrentPage}
+              loggedInUser={loggedInUser}
+              addNotification={addNotification}
+              highlightQuestionId={highlightQuestionId}
+              setHighlightQuestionId={setHighlightQuestionId}
+            />
+          </main>
         );
       case "teacher-dashboard-solved":
         return (
-          <SolvedQuestionsDashboard
-            setCurrentPage={setCurrentPage}
-            loggedInUser={loggedInUser}
-          />
+          <main className="flex-grow">
+            <SolvedQuestionsDashboard
+              setCurrentPage={setCurrentPage}
+              loggedInUser={loggedInUser}
+            />
+          </main>
         );
       case "admin-dashboard":
         return (
-          <AdminDashboard
-            setCurrentPage={setCurrentPage}
-            availableCourses={courses}
-          />
+          <main className="flex-grow">
+            <AdminDashboard
+              setCurrentPage={setCurrentPage}
+              availableCourses={courses}
+            />
+          </main>
         );
       case "admin-students":
-        return <StudentsManagement setCurrentPage={setCurrentPage} />;
+        return (
+          <main className="flex-grow">
+            <StudentsManagement setCurrentPage={setCurrentPage} />
+          </main>
+        );
       case "admin-teachers":
-        return <TeachersManagement setCurrentPage={setCurrentPage} />;
+        return (
+          <main className="flex-grow">
+            <TeachersManagement setCurrentPage={setCurrentPage} />
+          </main>
+        );
       case "admin-courses":
-        return <CoursesManagement setCurrentPage={setCurrentPage} />;
+        return (
+          <main className="flex-grow">
+            <CoursesManagement setCurrentPage={setCurrentPage} />
+          </main>
+        );
       case "add-course-form":
         return (
-          <AddCourseForm
-            setCurrentPage={setCurrentPage}
-            addCourse={addCourse}
-          />
+          <main className="flex-grow">
+            <AddCourseForm
+              setCurrentPage={setCurrentPage}
+              addCourse={addCourse}
+            />
+          </main>
         );
       case "admin-qa":
-        return <QuestionsAnswersManagement setCurrentPage={setCurrentPage} />;
+        return (
+          <main className="flex-grow">
+            <QuestionsAnswersManagement setCurrentPage={setCurrentPage} />
+          </main>
+        );
       case "admin-money-flow":
         return (
-          <MoneyFlowManagement
-            setCurrentPage={setCurrentPage}
-            availableCourses={courses}
-          />
+          <main className="flex-grow">
+            <MoneyFlowManagement
+              setCurrentPage={setCurrentPage}
+              availableCourses={courses}
+            />
+          </main>
         );
       case "ask-doubt-for-course":
         return (
-          <AskDoubtForm
-            setCurrentPage={setCurrentPage}
-            preselectedCourseName={selectedCourseForSubjects}
-            loggedInUser={loggedInUser}
-            addNotification={addNotification}
-          />
+          <main className="flex-grow">
+            <AskDoubtForm
+              setCurrentPage={setCurrentPage}
+              preselectedCourseName={selectedCourseForSubjects}
+              loggedInUser={loggedInUser}
+              addNotification={addNotification}
+            />
+          </main>
         );
       case "question-history-for-course":
         return (
-          <QuestionHistoryPage
-            setCurrentPage={setCurrentPage}
-            loggedInUser={loggedInUser}
-            highlightQuestionId={highlightQuestionId}
-            setHighlightQuestionId={setHighlightQuestionId}
-            addNotification={addNotification}
-            filterByCourseName={selectedCourseForSubjects}
-          />
+          <main className="flex-grow">
+            <QuestionHistoryPage
+              setCurrentPage={setCurrentPage}
+              loggedInUser={loggedInUser}
+              highlightQuestionId={highlightQuestionId}
+              setHighlightQuestionId={setHighlightQuestionId}
+              addNotification={addNotification}
+              filterByCourseName={selectedCourseForSubjects}
+            />
+          </main>
         );
       case "question-history":
         return (
-          <QuestionHistoryPage
-            setCurrentPage={setCurrentPage}
-            loggedInUser={loggedInUser}
-            highlightQuestionId={highlightQuestionId}
-            setHighlightQuestionId={setHighlightQuestionId}
-            addNotification={addNotification}
-          />
+          <main className="flex-grow">
+            <QuestionHistoryPage
+              setCurrentPage={setCurrentPage}
+              loggedInUser={loggedInUser}
+              highlightQuestionId={highlightQuestionId}
+              setHighlightQuestionId={setHighlightQuestionId}
+              addNotification={addNotification}
+            />
+          </main>
         );
       case "enrollment-form":
         return (
-          <EnrollmentForm
-            courseName={courseToEnroll}
-            setCurrentPage={setCurrentPage}
-            loggedInUser={loggedInUser}
-            availableCourses={courses}
-          />
+          <main className="flex-grow">
+            <EnrollmentForm
+              courseName={courseToEnroll}
+              setCurrentPage={setCurrentPage}
+              loggedInUser={loggedInUser}
+              availableCourses={courses}
+            />
+          </main>
         );
       case "course-details":
         return (
-          <CourseDetailsPage
-            courseName={selectedCourseForSubjects}
-            setCurrentPage={setCurrentPage}
-            loggedInUser={loggedInUser}
-            addNotification={addNotification}
-            setHighlightQuestionId={setHighlightQuestionId}
-          />
+          <main className="flex-grow">
+            <CourseDetailsPage
+              courseName={selectedCourseForSubjects}
+              setCurrentPage={setCurrentPage}
+              loggedInUser={loggedInUser}
+              addNotification={addNotification}
+              setHighlightQuestionId={setHighlightQuestionId}
+            />
+          </main>
         );
       case "student-profile":
         return (
-          <StudentProfilePage
-            setCurrentPage={setCurrentPage}
-            loggedInUser={loggedInUser}
-          />
+          <main className="flex-grow">
+            <StudentProfilePage
+              setCurrentPage={setCurrentPage}
+              loggedInUser={loggedInUser}
+            />
+          </main>
         );
       case "teacher-profile":
         return (
-          <TeacherProfilePage
-            setCurrentPage={setCurrentPage}
-            loggedInUser={loggedInUser}
-          />
+          <main className="flex-grow">
+            <TeacherProfilePage
+              setCurrentPage={setCurrentPage}
+              loggedInUser={loggedInUser}
+            />
+          </main>
         );
       case "admin-profile":
         return (
-          <AdminProfilePage
-            setCurrentPage={setCurrentPage}
-            loggedInUser={loggedInUser}
-          />
+          <main className="flex-grow">
+            <AdminProfilePage
+              setCurrentPage={setCurrentPage}
+              loggedInUser={loggedInUser}
+            />
+          </main>
         );
       default:
         return (

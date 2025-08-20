@@ -29,7 +29,7 @@ const TeacherLoginPage = ({ setCurrentPage, setLoggedInUser }) => {
         });
         setTimeout(() => {
           setCurrentPage("teacher-dashboard-pending");
-        }, 1500);
+        }, 0);
       } else {
         setError("This is not a valid teacher account.");
       }

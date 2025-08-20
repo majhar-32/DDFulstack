@@ -54,7 +54,7 @@ const StudentRegistrationForm = ({ setCurrentPage }) => {
         setIsSubmitted(true);
         setTimeout(() => {
           setCurrentPage("student-login");
-        }, 1500);
+        }, 0);
 
       } catch (error) {
         if (error.response && error.response.status === 400) {

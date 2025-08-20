@@ -54,7 +54,7 @@ const TeacherRegistrationForm = ({ setCurrentPage }) => {
         setIsSubmitted(true);
         setTimeout(() => {
           setCurrentPage("teacher-login");
-        }, 1500);
+        }, 0);
       } catch (error) {
         setErrors({
           form: "Registration failed. This email might already be in use.",
