@@ -1,33 +1,43 @@
 import React, { useState, useEffect } from "react";
+import api from "../../services/api"; // api import করা হয়েছে
 
-const TeacherProfilePage = ({ setCurrentPage, loggedInUser }) => {
+const TeacherProfilePage = ({ loggedInUser }) => {
   const [teacherInfo, setTeacherInfo] = useState(null);
-  const [solvedQuestionsCount, setSolvedQuestionsCount] = useState(0);
+  const [loading, setLoading] = useState(true); // লোডিং স্টেট যোগ করা হয়েছে
 
   useEffect(() => {
     if (loggedInUser && loggedInUser.role === "teacher") {
-      const teachers =
-        JSON.parse(localStorage.getItem("doubtDeskTeachers")) || [];
-      const currentTeacher = teachers.find(
-        (t) => t.email === loggedInUser.email
-      );
-      setTeacherInfo(currentTeacher);
+      const fetchTeacherProfile = async () => {
+        try {
+          setLoading(true);
+          // API থেকে শিক্ষকের প্রোফাইল তথ্য আনা হচ্ছে
+          const response = await api.get(
+            `/teachers/profile?email=${loggedInUser.email}`
+          );
+          setTeacherInfo(response.data);
+        } catch (error) {
+          console.error("Failed to load teacher profile:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-      const allQuestions =
-        JSON.parse(localStorage.getItem("doubtDeskQuestions")) || [];
-      const solvedByThisTeacher = allQuestions.filter(
-        (q) =>
-          (q.status === "solved" || q.status === "follow-up-solved") &&
-          q.solvedByTeacher === loggedInUser.email
-      );
-      setSolvedQuestionsCount(solvedByThisTeacher.length);
+      fetchTeacherProfile();
     }
   }, [loggedInUser]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-8">
+        <p className="text-lg text-gray-700">Loading teacher profile...</p>
+      </div>
+    );
+  }
 
   if (!teacherInfo) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-8">
-        <p className="text-lg text-gray-700">Loading teacher profile...</p>
+        <p className="text-lg text-red-500">Could not load teacher profile.</p>
       </div>
     );
   }
@@ -40,6 +50,9 @@ const TeacherProfilePage = ({ setCurrentPage, loggedInUser }) => {
         </h2>
         <div className="space-y-4 text-left">
           <p className="text-lg text-gray-800">
+            <span className="font-semibold">Name:</span> {teacherInfo.name}
+          </p>
+          <p className="text-lg text-gray-800">
             <span className="font-semibold">Email:</span> {teacherInfo.email}
           </p>
           <p className="text-lg text-gray-800">
@@ -47,8 +60,12 @@ const TeacherProfilePage = ({ setCurrentPage, loggedInUser }) => {
             {teacherInfo.institute}
           </p>
           <p className="text-lg text-gray-800">
+            <span className="font-semibold">Qualification:</span>{" "}
+            {teacherInfo.qualification}
+          </p>
+          <p className="text-lg text-gray-800">
             <span className="font-semibold">Questions Solved:</span>{" "}
-            {solvedQuestionsCount}
+            {teacherInfo.solvedQuestionsCount}
           </p>
         </div>
       </div>

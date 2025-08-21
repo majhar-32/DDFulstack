@@ -1,31 +1,50 @@
 import React, { useState, useEffect } from "react";
+import api from "../../services/api"; // api import করা হয়েছে
 
-const StudentProfilePage = ({ setCurrentPage, loggedInUser }) => {
+const StudentProfilePage = ({ loggedInUser }) => {
   const [studentInfo, setStudentInfo] = useState(null);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [loading, setLoading] = useState(true); // লোডিং স্টেট যোগ করা হয়েছে
 
   useEffect(() => {
     if (loggedInUser && loggedInUser.role === "student") {
-      const students =
-        JSON.parse(localStorage.getItem("doubtDeskStudents")) || [];
-      const currentStudent = students.find(
-        (s) => s.email === loggedInUser.email
-      );
-      setStudentInfo(currentStudent);
+      const fetchStudentProfile = async () => {
+        try {
+          setLoading(true);
+          // API থেকে ছাত্রের প্রোফাইল তথ্য আনা হচ্ছে
+          const profileResponse = await api.get(
+            `/students/profile?email=${loggedInUser.email}`
+          );
+          setStudentInfo(profileResponse.data);
 
-      const storedEnrolledCourses =
-        JSON.parse(localStorage.getItem("enrolledCourses")) || [];
-      const studentCourses = storedEnrolledCourses
-        .filter((enrollment) => enrollment.studentEmail === loggedInUser.email)
-        .map((enrollment) => enrollment.courseName);
-      setEnrolledCourses(studentCourses);
+          // API থেকে এনরোল করা কোর্সের তালিকা আনা হচ্ছে
+          const coursesResponse = await api.get(
+            `/students/courses?email=${loggedInUser.email}`
+          );
+          setEnrolledCourses(coursesResponse.data);
+        } catch (error) {
+          console.error("Failed to load student profile:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchStudentProfile();
     }
   }, [loggedInUser]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-8">
+        <p className="text-lg text-gray-700">Loading student profile...</p>
+      </div>
+    );
+  }
 
   if (!studentInfo) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-8">
-        <p className="text-lg text-gray-700">Loading student profile...</p>
+        <p className="text-lg text-red-500">Could not load student profile.</p>
       </div>
     );
   }
@@ -38,11 +57,18 @@ const StudentProfilePage = ({ setCurrentPage, loggedInUser }) => {
         </h2>
         <div className="space-y-4 text-left">
           <p className="text-lg text-gray-800">
+            <span className="font-semibold">Name:</span> {studentInfo.name}
+          </p>
+          <p className="text-lg text-gray-800">
             <span className="font-semibold">Email:</span> {studentInfo.email}
           </p>
           <p className="text-lg text-gray-800">
+            <span className="font-semibold">Institute:</span>{" "}
+            {studentInfo.institute}
+          </p>
+          <p className="text-lg text-gray-800">
             <span className="font-semibold">Grade/Level:</span>{" "}
-            {studentInfo.gradeLevel}
+            {studentInfo.levelOfStudy}
           </p>
           <div className="mt-6">
             <h3 className="text-xl font-bold text-gray-800 mb-3">
@@ -50,8 +76,8 @@ const StudentProfilePage = ({ setCurrentPage, loggedInUser }) => {
             </h3>
             {enrolledCourses.length > 0 ? (
               <ul className="list-disc list-inside space-y-2 text-gray-700">
-                {enrolledCourses.map((course, index) => (
-                  <li key={index}>{course}</li>
+                {enrolledCourses.map((course) => (
+                  <li key={course.courseId}>{course.title}</li>
                 ))}
               </ul>
             ) : (

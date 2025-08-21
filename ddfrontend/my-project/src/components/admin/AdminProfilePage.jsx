@@ -1,29 +1,43 @@
 import React, { useState, useEffect } from "react";
+import api from "../../services/api"; // api import করা হয়েছে
 
-const AdminProfilePage = ({ setCurrentPage, loggedInUser }) => {
+const AdminProfilePage = ({ loggedInUser }) => {
   const [adminInfo, setAdminInfo] = useState(null);
+  const [loading, setLoading] = useState(true); // লোডিং স্টেট যোগ করা হয়েছে
 
   useEffect(() => {
     if (loggedInUser && loggedInUser.role === "admin") {
-      const admins = JSON.parse(localStorage.getItem("doubtDeskAdmins")) || [];
-      const currentAdmin = admins.find((a) => a.email === loggedInUser.email);
+      const fetchAdminProfile = async () => {
+        try {
+          setLoading(true);
+          // API থেকে অ্যাডমিনের প্রোফাইল তথ্য আনা হচ্ছে
+          const response = await api.get(
+            `/admin/profile?email=${loggedInUser.email}`
+          );
+          setAdminInfo(response.data);
+        } catch (error) {
+          console.error("Failed to load admin profile:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-      if (!currentAdmin && loggedInUser.email === "admin@doubtdesk.com") {
-        setAdminInfo({
-          name: "DoubtDesk Admin",
-          phoneNumber: "01XXXXXXXXX",
-          email: "admin@doubtdesk.com",
-        });
-      } else {
-        setAdminInfo(currentAdmin);
-      }
+      fetchAdminProfile();
     }
   }, [loggedInUser]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-8">
+        <p className="text-lg text-gray-700">Loading admin profile...</p>
+      </div>
+    );
+  }
 
   if (!adminInfo) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-8">
-        <p className="text-lg text-gray-700">Loading admin profile...</p>
+        <p className="text-lg text-red-500">Could not load admin profile.</p>
       </div>
     );
   }
@@ -34,15 +48,13 @@ const AdminProfilePage = ({ setCurrentPage, loggedInUser }) => {
         <h2 className="text-4xl font-bold text-red-600 mb-8">Admin Profile</h2>
         <div className="space-y-4 text-left">
           <p className="text-lg text-gray-800">
-            <span className="font-semibold">Name:</span>{" "}
-            {adminInfo.name || "N/A"}
+            <span className="font-semibold">Name:</span> {adminInfo.name}
           </p>
           <p className="text-lg text-gray-800">
             <span className="font-semibold">Email:</span> {adminInfo.email}
           </p>
           <p className="text-lg text-gray-800">
-            <span className="font-semibold">Phone Number:</span>{" "}
-            {adminInfo.phoneNumber || "N/A"}
+            <span className="font-semibold">Role:</span> {adminInfo.role}
           </p>
         </div>
       </div>
