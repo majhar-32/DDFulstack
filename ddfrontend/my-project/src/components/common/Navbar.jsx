@@ -33,7 +33,7 @@ const Navbar = ({
         document
           .getElementById("courses-section")
           ?.scrollIntoView({ behavior: "smooth" });
-      }, 0);
+      }, 100);
     } else {
       document
         .getElementById("courses-section")
@@ -79,7 +79,6 @@ const Navbar = ({
     };
   }, [joinRef, notificationsRef]);
 
-  // --- এই ফাংশনটি পরিবর্তন করা হয়েছে ---
   const getDashboardPage = () => {
     if (!loggedInUser) return "/";
     switch (loggedInUser.role) {
@@ -109,7 +108,6 @@ const Navbar = ({
   };
 
   const isTeacherDashboard = loggedInUser && loggedInUser.role === "teacher";
-  const isAdminDashboard = loggedInUser && loggedInUser.role === "admin";
   const isStudentDashboard = loggedInUser && loggedInUser.role === "student";
 
   const getLinkClassName = (path) => {
@@ -128,7 +126,6 @@ const Navbar = ({
     <nav className="bg-white shadow-md py-3 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex justify-between items-center h-16">
         <div className="flex-shrink-0 flex items-center">
-          {/* --- লোগোর লিঙ্ক পরিবর্তন করা হয়েছে --- */}
           <Link
             to={loggedInUser ? getDashboardPage() : "/"}
             className="flex items-center text-2xl font-bold text-indigo-600 rounded-md p-2 hover:bg-gray-100 transition-colors duration-200"
@@ -153,14 +150,12 @@ const Navbar = ({
                 Dashboard
               </Link>
               {isTeacherDashboard && (
-                <>
-                  <Link
-                    to="/teacher/solved"
-                    className={getLinkClassName("/teacher/solved")}
-                  >
-                    Solved Questions
-                  </Link>
-                </>
+                <Link
+                  to="/teacher/solved"
+                  className={getLinkClassName("/teacher/solved")}
+                >
+                  Solved Questions
+                </Link>
               )}
               <Link
                 to={getProfilePage()}
@@ -177,13 +172,12 @@ const Navbar = ({
             </>
           ) : (
             <>
-              <a
-                href="#courses-section"
-                onClick={scrollToCourses}
+              <Link
+                to="/#courses-section"
                 className="text-gray-700 hover:text-indigo-600 font-medium transition-colors duration-200 py-2 px-3 rounded-md hover:bg-gray-100"
               >
                 Courses
-              </a>
+              </Link>
               <div className="relative" ref={joinRef}>
                 <button
                   onClick={() => setIsJoinOpen(!isJoinOpen)}
@@ -276,15 +270,13 @@ const Navbar = ({
                   Dashboard
                 </Link>
                 {isTeacherDashboard && (
-                  <>
-                    <Link
-                      to="/teacher/solved"
-                      onClick={() => setIsOpen(false)}
-                      className={getMobileLinkClassName("/teacher/solved")}
-                    >
-                      Solved Questions
-                    </Link>
-                  </>
+                  <Link
+                    to="/teacher/solved"
+                    onClick={() => setIsOpen(false)}
+                    className={getMobileLinkClassName("/teacher/solved")}
+                  >
+                    Solved Questions
+                  </Link>
                 )}
                 <Link
                   to={getProfilePage()}
@@ -302,13 +294,13 @@ const Navbar = ({
               </>
             ) : (
               <>
-                <a
-                  href="#courses-section"
-                  onClick={scrollToCourses}
+                <Link
+                  to="/#courses-section"
+                  onClick={() => setIsOpen(false)}
                   className="text-gray-700 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100"
                 >
                   Courses
-                </a>
+                </Link>
                 <Link
                   to="/login/teacher"
                   onClick={() => setIsOpen(false)}

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
 // Component Imports
 import Navbar from "./components/common/Navbar";
@@ -37,61 +37,71 @@ const HomePage = ({
   enrolledCourses,
   loadingCourses,
   coursesSectionRef,
-}) => (
-  <main className="p-8 text-center flex-grow">
-    <div>
-      <h1 className="text-4xl font-bold text-gray-800 mb-4">
-        From Confusion to Clarity — DoubtDesk
-      </h1>
-      <div className="flex flex-col md:flex-row mt-12 bg-white rounded-lg shadow-md max-w-6xl mx-auto overflow-hidden">
-        <div className="md:w-1/2 p-6 flex flex-col justify-center">
-          <h1 className="text-lg text-gray-700 font-bold mb-2">
-            DoubtDesk – Your Personal Doubt-Solving Companion
-          </h1>
-          <p className="text-gray-600 leading-relaxed mb-2">
-            Struggling with a question? DoubtDesk helps students get clear,
-            subject-specific answers from expert teachers.
-          </p>
-        </div>
-        <div className="md:w-1/2 h-full">
-          <img
-            src="stress.png"
-            alt="Student thinking"
-            className="w-full h-full object-cover"
-          />
+}) => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash === "#courses-section" && coursesSectionRef.current) {
+      coursesSectionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [location, coursesSectionRef]);
+
+  return (
+    <main className="p-8 text-center flex-grow">
+      <div>
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">
+          From Confusion to Clarity — DoubtDesk
+        </h1>
+        <div className="flex flex-col md:flex-row mt-12 bg-white rounded-lg shadow-md max-w-6xl mx-auto overflow-hidden">
+          <div className="md:w-1/2 p-6 flex flex-col justify-center">
+            <h1 className="text-lg text-gray-700 font-bold mb-2">
+              DoubtDesk – Your Personal Doubt-Solving Companion
+            </h1>
+            <p className="text-gray-600 leading-relaxed mb-2">
+              Struggling with a question? DoubtDesk helps students get clear,
+              subject-specific answers from expert teachers.
+            </p>
+          </div>
+          <div className="md:w-1/2 h-full">
+            <img
+              src="stress.png"
+              alt="Student thinking"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
       </div>
-    </div>
-    <section id="courses-section" className="mt-16" ref={coursesSectionRef}>
-      <h2 className="text-4xl font-bold text-gray-800 mb-10">
-        Our Popular Courses
-      </h2>
-      {loadingCourses ? (
-        <p>Loading courses...</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {courses.map((course) => (
-            <CourseCard
-              key={course.courseId}
-              topTitle={course.category}
-              programTitle={course.title}
-              courseName={course.title}
-              features={[
-                "All subjects covered",
-                "Ask unlimited questions",
-                "24/7 doubt posting facility",
-              ]}
-              priceText={`${course.price} BDT`}
-              enrollButtonText="Enroll Now"
-              onEnrollClick={handleEnrollClick}
-              isEnrolled={enrolledCourses.has(course.title)}
-            />
-          ))}
-        </div>
-      )}
-    </section>
-  </main>
-);
+      <section id="courses-section" className="mt-16" ref={coursesSectionRef}>
+        <h2 className="text-4xl font-bold text-gray-800 mb-10">
+          Our Popular Courses
+        </h2>
+        {loadingCourses ? (
+          <p>Loading courses...</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {courses.map((course) => (
+              <CourseCard
+                key={course.courseId}
+                topTitle={course.category}
+                programTitle={course.title}
+                courseName={course.title}
+                features={[
+                  "All subjects covered",
+                  "Ask unlimited questions",
+                  "24/7 doubt posting facility",
+                ]}
+                priceText={`${course.price} BDT`}
+                enrollButtonText="Enroll Now"
+                onEnrollClick={handleEnrollClick}
+                isEnrolled={enrolledCourses.has(course.title)}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+};
 
 const App = () => {
   const [courseToEnroll, setCourseToEnroll] = useState(null);
@@ -106,7 +116,6 @@ const App = () => {
   const [enrolledCourses, setEnrolledCourses] = useState(new Set());
   const navigate = useNavigate();
 
-  // Fetch all courses on initial load
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -122,7 +131,6 @@ const App = () => {
     fetchCourses();
   }, []);
 
-  // Fetch enrolled courses when user logs in or after a new enrollment
   useEffect(() => {
     const fetchEnrolledCourses = async () => {
       if (loggedInUser && loggedInUser.role === "student") {
@@ -180,7 +188,6 @@ const App = () => {
     }
   };
 
-  // This function will be called from EnrollmentForm after a successful purchase
   const handleEnrollSuccess = (newlyEnrolledCourse) => {
     setEnrolledCourses(
       (prevEnrolledCourses) =>

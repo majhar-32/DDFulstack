@@ -38,13 +38,9 @@ const StudentDashboard = ({ loggedInUser, setSelectedCourseForSubjects }) => {
     navigate(`/student/course-details`);
   };
 
+  // --- এই ফাংশনটি পরিবর্তন করা হয়েছে ---
   const handleBuyCourses = () => {
-    navigate("/");
-    setTimeout(() => {
-      document
-        .getElementById("courses-section")
-        ?.scrollIntoView({ behavior: "smooth" });
-    }, 0);
+    navigate("/#courses-section");
   };
 
   if (loading) {
