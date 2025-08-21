@@ -39,12 +39,23 @@ const HomePage = ({
   coursesSectionRef,
 }) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (location.hash === "#courses-section" && coursesSectionRef.current) {
+    // --- এই অংশটি পরিবর্তন করা হয়েছে ---
+    // Dashboard থেকে আসা state চেক করবে
+    if (location.state?.scrollToCourses && coursesSectionRef.current) {
+      coursesSectionRef.current.scrollIntoView({ behavior: "smooth" });
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    // Navbar থেকে আসা hash চেক করবে
+    else if (
+      location.hash === "#courses-section" &&
+      coursesSectionRef.current
+    ) {
       coursesSectionRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [location, coursesSectionRef]);
+  }, [location, coursesSectionRef, navigate]);
 
   return (
     <main className="p-8 text-center flex-grow">
