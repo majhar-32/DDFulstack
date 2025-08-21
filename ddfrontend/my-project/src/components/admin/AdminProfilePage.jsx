@@ -45,14 +45,6 @@ const AdminProfilePage = ({ setCurrentPage, loggedInUser }) => {
             {adminInfo.phoneNumber || "N/A"}
           </p>
         </div>
-        <div className="flex justify-center mt-8">
-          <button
-            onClick={() => setCurrentPage("admin-dashboard")}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition-all duration-300 transform hover:scale-105 shadow-md"
-          >
-            Back to Dashboard
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট
+import { useNavigate, Link } from "react-router-dom";
+import api from "../../services/api";
 
-const TeacherLoginPage = ({ setCurrentPage, setLoggedInUser }) => {
+const TeacherLoginPage = ({ setLoggedInUser }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -28,7 +30,7 @@ const TeacherLoginPage = ({ setCurrentPage, setLoggedInUser }) => {
           name: userData.name,
         });
         setTimeout(() => {
-          setCurrentPage("teacher-dashboard-pending");
+          navigate("/teacher/dashboard");
         }, 0);
       } else {
         setError("This is not a valid teacher account.");
@@ -77,13 +79,12 @@ const TeacherLoginPage = ({ setCurrentPage, setLoggedInUser }) => {
         </form>
         <p className="mt-8 text-gray-700">
           Don't have an account?{" "}
-          <a
-            href="#"
-            onClick={() => setCurrentPage("teacher-registration")}
+          <Link
+            to="/register/teacher"
             className="text-blue-600 font-semibold hover:underline"
           >
             Register now.
-          </a>
+          </Link>
         </p>
       </div>
     </div>

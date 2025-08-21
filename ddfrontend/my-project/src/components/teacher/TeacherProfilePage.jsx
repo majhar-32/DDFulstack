@@ -51,14 +51,6 @@ const TeacherProfilePage = ({ setCurrentPage, loggedInUser }) => {
             {solvedQuestionsCount}
           </p>
         </div>
-        <div className="flex justify-center mt-8">
-          <button
-            onClick={() => setCurrentPage("teacher-dashboard-pending")}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg"
-          >
-            Back to Dashboard
-          </button>
-        </div>
       </div>
     </div>
   );

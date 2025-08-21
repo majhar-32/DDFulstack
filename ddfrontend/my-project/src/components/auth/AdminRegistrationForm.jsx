@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
-const AdminRegistrationForm = ({ setCurrentPage }) => {
+const AdminRegistrationForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     phoneNumber: "",
     email: "",
     password: "",
     confirmPassword: "",
-    role: "admin", // একটি ডিফল্ট রোল
+    role: "admin",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +44,7 @@ const AdminRegistrationForm = ({ setCurrentPage }) => {
           name: formData.name,
           email: formData.email,
           password: formData.password,
-          phones: [formData.phoneNumber], // phoneNumber-কে phones array-তে পাঠানো হচ্ছে
+          phones: [formData.phoneNumber],
           role: formData.role,
         };
 
@@ -50,8 +52,8 @@ const AdminRegistrationForm = ({ setCurrentPage }) => {
 
         setIsSubmitted(true);
         setTimeout(() => {
-          setCurrentPage("admin-login");
-        }, 0);
+          navigate("/login/admin");
+        },0);
       } catch (error) {
         setErrors({
           form: "Registration failed. This email might already be in use.",

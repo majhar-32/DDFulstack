@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট করা হয়েছে
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // 1. useNavigate ইম্পোর্ট করুন
+import api from "../../services/api";
 
-const EnrollmentForm = ({ courseName, setCurrentPage, loggedInUser }) => {
+// 2. onEnrollSuccess prop টি গ্রহণ করুন এবং setCurrentPage সরিয়ে দিন
+const EnrollmentForm = ({ courseName, loggedInUser, onEnrollSuccess }) => {
   const [formData, setFormData] = useState({
-    // email এখন loggedInUser থেকে সরাসরি নেওয়া হবে, তাই state থেকে সরানো হলো
     paymentMethod: "",
     transactionId: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-  // isAlreadyEnrolled state আর প্রয়োজন নেই, কারণ সার্ভার এটি হ্যান্ডেল করবে
+  const navigate = useNavigate(); // 3. useNavigate হুক ব্যবহার করুন
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,7 +26,6 @@ const EnrollmentForm = ({ courseName, setCurrentPage, loggedInUser }) => {
     return newErrors;
   };
 
-  // handleSubmit ফাংশনটিকে async করা হয়েছে
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
@@ -36,7 +35,6 @@ const EnrollmentForm = ({ courseName, setCurrentPage, loggedInUser }) => {
     } else {
       setErrors({});
       try {
-        // ব্যাকএন্ডের DTO অনুযায়ী payload তৈরি করা হচ্ছে
         const payload = {
           studentEmail: loggedInUser.email,
           courseName: courseName,
@@ -44,16 +42,20 @@ const EnrollmentForm = ({ courseName, setCurrentPage, loggedInUser }) => {
           transactionId: formData.transactionId,
         };
 
-        // API এন্ডপয়েন্টে POST রিকোয়েস্ট পাঠানো হচ্ছে
         await api.post("/payments", payload);
 
         setIsSubmitted(true);
 
+        // 4. সফলভাবে কোর্স কেনার পর onEnrollSuccess ফাংশনটি কল করুন
+        if (onEnrollSuccess) {
+          onEnrollSuccess(courseName);
+        }
+
         setTimeout(() => {
-          setCurrentPage("student-dashboard");
+          // 5. setCurrentPage এর পরিবর্তে navigate ব্যবহার করুন
+          navigate("/student/dashboard");
         }, 0);
       } catch (error) {
-        // সার্ভার থেকে এরর আসলে
         setErrors({
           form: "Enrollment failed. You might already be enrolled or the course is not available.",
         });
@@ -89,7 +91,6 @@ const EnrollmentForm = ({ courseName, setCurrentPage, loggedInUser }) => {
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email field (read-only) */}
           <div>
             <label
               htmlFor="email"
@@ -106,7 +107,6 @@ const EnrollmentForm = ({ courseName, setCurrentPage, loggedInUser }) => {
               className="shadow-sm appearance-none border rounded-md w-full py-3 px-4 text-gray-500 bg-gray-100"
             />
           </div>
-          {/* Payment Method */}
           <div>
             <label
               htmlFor="paymentMethod"
@@ -134,7 +134,6 @@ const EnrollmentForm = ({ courseName, setCurrentPage, loggedInUser }) => {
               </p>
             )}
           </div>
-          {/* Transaction ID */}
           <div>
             <label
               htmlFor="transactionId"
@@ -167,7 +166,7 @@ const EnrollmentForm = ({ courseName, setCurrentPage, loggedInUser }) => {
             </button>
             <button
               type="button"
-              onClick={() => setCurrentPage("home")}
+              onClick={() => navigate("/")}
               className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg"
             >
               Cancel

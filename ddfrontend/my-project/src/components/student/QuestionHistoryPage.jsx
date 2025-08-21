@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom"; // 1. useNavigate এবং useLocation ইম্পোর্ট করুন
 import api from "../../services/api";
 import AskDoubtForm from "./AskDoubtForm";
 
 const QuestionHistoryPage = ({
-  setCurrentPage,
+  // setCurrentPage prop টি আর প্রয়োজন নেই
   loggedInUser,
   addNotification,
-  filterByCourseName = null,
 }) => {
+  const navigate = useNavigate(); // 2. useNavigate হুক ব্যবহার করুন
+  const location = useLocation();
+
+  // CourseDetailsPage থেকে পাঠানো কোর্স এর নাম state থেকে নেওয়া হচ্ছে
+  const filterByCourseName = location.state?.courseName;
+
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFollowUpForm, setShowFollowUpForm] = useState(false);
   const [selectedOriginalQuestion, setSelectedOriginalQuestion] =
     useState(null);
-
-  // --- নতুন স্টেট: ইমেজ বড় করে দেখার জন্য ---
   const [enlargedImage, setEnlargedImage] = useState(null);
 
   const fetchQuestions = async () => {
@@ -68,7 +72,6 @@ const QuestionHistoryPage = ({
     fetchQuestions();
   };
 
-  // --- নতুন হ্যান্ডলার: ইমেজ বড় করার এবং বন্ধ করার জন্য ---
   const handleEnlargeImage = (imageUrl) => {
     setEnlargedImage(imageUrl);
   };
@@ -102,7 +105,7 @@ const QuestionHistoryPage = ({
                   key={question.questionId}
                   className="bg-purple-50 p-4 rounded-lg shadow-sm border"
                 >
-                  {/* প্রশ্নের বিবরণ */}
+                  {/* Question details */}
                   <div className="text-left">
                     <p className="font-semibold text-gray-800 mb-2">
                       {question.questionTitle}
@@ -120,7 +123,7 @@ const QuestionHistoryPage = ({
                         <span className="font-semibold">{question.status}</span>
                       </span>
                     </div>
-                    {/* ছাত্রের পাঠানো অ্যাটাচমেন্ট */}
+                    {/* Student attachments */}
                     {question.questionAttachments &&
                       question.questionAttachments.length > 0 && (
                         <div className="mt-2">
@@ -166,7 +169,7 @@ const QuestionHistoryPage = ({
                       )}
                   </div>
 
-                  {/* সমাধানের অংশ */}
+                  {/* Solution details */}
                   {question.solutionText && (
                     <div className="mt-3 p-3 bg-green-50 rounded-md border border-green-200 text-left">
                       <p className="font-semibold text-green-800 mb-1">
@@ -176,7 +179,7 @@ const QuestionHistoryPage = ({
                         {question.solutionText}
                       </p>
 
-                      {/* শিক্ষকের পাঠানো অ্যাটাচমেন্ট */}
+                      {/* Teacher attachments */}
                       {question.solutionAttachments &&
                         question.solutionAttachments.length > 0 && (
                           <div className="mt-2">
@@ -250,8 +253,9 @@ const QuestionHistoryPage = ({
         )}
 
         <div className="flex justify-center mt-8">
+          {/* 3. onClick এ navigate ফাংশন ব্যবহার করা হয়েছে */}
           <button
-            onClick={() => setCurrentPage("student-dashboard")}
+            onClick={() => navigate("/student/dashboard")}
             className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg"
           >
             Back to Dashboard
@@ -265,13 +269,11 @@ const QuestionHistoryPage = ({
           originalQuestion={selectedOriginalQuestion}
           loggedInUser={loggedInUser}
           addNotification={addNotification}
-          setCurrentPage={setCurrentPage}
           onSuccess={handleFollowUpSuccess}
           onClose={() => setShowFollowUpForm(false)}
         />
       )}
 
-      {/* ইমেজ বড় করে দেখানোর মোডাল */}
       {enlargedImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 // আপনার ব্যাকএন্ড সার্ভারের বেস URL
-const API_URL = 'http://doubtdesk-env.eba-zdcd9d8b.ap-south-1.elasticbeanstalk.com/api';
+const API_URL = 'http://localhost:8080/api';
 const api = axios.create({
   baseURL: API_URL,
   headers: {

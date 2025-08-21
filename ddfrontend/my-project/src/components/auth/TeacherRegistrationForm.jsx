@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
-const TeacherRegistrationForm = ({ setCurrentPage }) => {
+const TeacherRegistrationForm = () => {
   const [formData, setFormData] = useState({
-    name: "", // name ফিল্ড যোগ করা হয়েছে
+    name: "",
     institute: "",
     email: "",
     password: "",
     confirmPassword: "",
-    qualification: "M.Sc in Physics", // একটি ডিফল্ট মান, এটি ফর্মে যোগ করা যেতে পারে
+    qualification: "M.Sc in Physics",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,7 +55,7 @@ const TeacherRegistrationForm = ({ setCurrentPage }) => {
 
         setIsSubmitted(true);
         setTimeout(() => {
-          setCurrentPage("teacher-login");
+          navigate("/login/teacher");
         }, 0);
       } catch (error) {
         setErrors({

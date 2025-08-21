@@ -1,23 +1,23 @@
 import React, { useState } from "react";
-import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট করা হয়েছে
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import api from "../../services/api";
 
-const StudentLoginPage = ({
-  setCurrentPage,
-  setLoggedInUser,
-  isEnrollmentFlow,
-}) => {
+const StudentLoginPage = ({ setLoggedInUser }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // handleLogin ফাংশনটিকে async করা হয়েছে
+  // Check if the user is coming from an enrollment attempt
+  const isEnrollmentFlow = location.state?.fromEnrollment;
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setIsSubmitted(false);
 
-    // ফ্রন্টএন্ড ভ্যালিডেশন আগের মতোই থাকছে
     if (!email.trim() || !password.trim()) {
       setError("Email and password are required.");
       return;
@@ -27,10 +27,8 @@ const StudentLoginPage = ({
       return;
     }
 
-    // API কল করার চেষ্টা
     try {
       const response = await api.post("/auth/login", { email, password });
-
       const userData = response.data;
 
       if (userData.role === "student") {
@@ -43,11 +41,11 @@ const StudentLoginPage = ({
 
         setTimeout(() => {
           if (isEnrollmentFlow) {
-            setCurrentPage("enrollment-form");
+            navigate("/student/enroll");
           } else {
-            setCurrentPage("student-dashboard");
+            navigate("/student/dashboard");
           }
-        }, 0);
+        },0);
       } else {
         setError("This is not a valid student account.");
         setIsSubmitted(false);
@@ -69,9 +67,7 @@ const StudentLoginPage = ({
             role="alert"
           >
             <strong className="font-bold">Success!</strong>
-            <span className="block sm:inline">
-              Logging in. Redirecting to dashboard...
-            </span>
+            <span className="block sm:inline"> Logging in...</span>
           </div>
         )}
 
@@ -114,15 +110,12 @@ const StudentLoginPage = ({
 
         <p className="mt-8 text-gray-700">
           Don't have an account?{" "}
-          <a
-            href="#"
-            onClick={() => {
-              setCurrentPage("student-registration");
-            }}
+          <Link
+            to="/register/student"
             className="text-blue-600 font-semibold hover:underline"
           >
             Register now.
-          </a>
+          </Link>
         </p>
       </div>
     </div>

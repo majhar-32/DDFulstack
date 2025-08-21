@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট
+import { useNavigate, Link } from "react-router-dom";
+import api from "../../services/api";
 
-const AdminLoginPage = ({ setCurrentPage, setLoggedInUser }) => {
+const AdminLoginPage = ({ setLoggedInUser }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -17,7 +19,6 @@ const AdminLoginPage = ({ setCurrentPage, setLoggedInUser }) => {
     }
 
     try {
-      // localStorage এবং হার্ডকোডেড লজিক মুছে API কল করা হচ্ছে
       const response = await api.post("/auth/login", { email, password });
       const userData = response.data;
 
@@ -29,7 +30,7 @@ const AdminLoginPage = ({ setCurrentPage, setLoggedInUser }) => {
           name: userData.name,
         });
         setTimeout(() => {
-          setCurrentPage("admin-dashboard");
+          navigate("/admin/dashboard");
         }, 0);
       } else {
         setError("This is not a valid admin account.");
@@ -80,13 +81,12 @@ const AdminLoginPage = ({ setCurrentPage, setLoggedInUser }) => {
         </form>
         <p className="mt-8 text-gray-700">
           Don't have an account?{" "}
-          <a
-            href="#"
-            onClick={() => setCurrentPage("admin-registration")}
+          <Link
+            to="/register/admin"
             className="text-blue-600 font-semibold hover:underline"
           >
             Register now.
-          </a>
+          </Link>
         </p>
       </div>
     </div>

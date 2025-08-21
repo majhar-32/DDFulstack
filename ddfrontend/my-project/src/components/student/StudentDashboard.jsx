@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from "react";
-import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট করা হয়েছে
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
-const StudentDashboard = ({
-  setCurrentPage,
-  setSelectedCourseForSubjects,
-  loggedInUser,
-  setIsCoursesOnlyView,
-}) => {
-  // enrolledCourses এর পরিবর্তে এখন courses, loading, error state থাকবে
+const StudentDashboard = ({ loggedInUser, setSelectedCourseForSubjects }) => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  // useEffect ব্যবহার করে ব্যাকএন্ড থেকে ডেটা আনা হচ্ছে
   useEffect(() => {
-    // লগইন করা ইউজার না থাকলে ডেটা আনার চেষ্টা করা হবে না
     if (!loggedInUser || !loggedInUser.email) {
       setLoading(false);
       return;
@@ -23,11 +17,10 @@ const StudentDashboard = ({
     const fetchEnrolledCourses = async () => {
       try {
         setLoading(true);
-        // আমাদের নতুন API এন্ডপয়েন্টে GET রিকোয়েস্ট পাঠানো হচ্ছে
         const response = await api.get(
           `/students/courses?email=${loggedInUser.email}`
         );
-        setCourses(response.data); // সার্ভার থেকে পাওয়া ডেটা state-এ সেট করা হচ্ছে
+        setCourses(response.data);
         setError(null);
       } catch (err) {
         setError("Failed to load enrolled courses. Please try again later.");
@@ -38,14 +31,22 @@ const StudentDashboard = ({
     };
 
     fetchEnrolledCourses();
-  }, [loggedInUser]); // loggedInUser পরিবর্তন হলে useEffect আবার চলবে
+  }, [loggedInUser]);
 
   const handleGoToCourse = (courseName) => {
     setSelectedCourseForSubjects(courseName);
-    setCurrentPage("course-details");
+    navigate(`/student/course-details`);
   };
 
-  // লোডিং حالة দেখানো হচ্ছে
+  const handleBuyCourses = () => {
+    navigate("/");
+    setTimeout(() => {
+      document
+        .getElementById("courses-section")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }, 0);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -54,7 +55,6 @@ const StudentDashboard = ({
     );
   }
 
-  // এরর حالة দেখানো হচ্ছে
   if (error) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -79,10 +79,7 @@ const StudentDashboard = ({
                   You haven't enrolled in any courses yet.
                 </p>
                 <button
-                  onClick={() => {
-                    setIsCoursesOnlyView(true);
-                    setCurrentPage("home-and-scroll");
-                  }}
+                  onClick={handleBuyCourses}
                   className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-md font-medium"
                 >
                   Buy Courses
@@ -90,14 +87,13 @@ const StudentDashboard = ({
               </>
             ) : (
               <div className="space-y-3">
-                {/* courses state থেকে ডেটা ম্যাপ করা হচ্ছে */}
                 {courses.map((course) => (
                   <div
-                    key={course.courseId} // এখন courseId ইউনিক কী হিসেবে ব্যবহৃত হবে
+                    key={course.courseId}
                     className="flex items-center justify-between bg-indigo-100 p-3 rounded-md shadow-sm"
                   >
                     <span className="text-indigo-800 font-medium">
-                      {course.title} {/* courseName এর পরিবর্তে title */}
+                      {course.title}
                     </span>
                     <button
                       onClick={() => handleGoToCourse(course.title)}
@@ -108,10 +104,7 @@ const StudentDashboard = ({
                   </div>
                 ))}
                 <button
-                  onClick={() => {
-                    setIsCoursesOnlyView(true);
-                    setCurrentPage("home-and-scroll");
-                  }}
+                  onClick={handleBuyCourses}
                   className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-md font-medium"
                 >
                   Buy More Courses

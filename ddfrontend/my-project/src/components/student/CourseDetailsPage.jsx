@@ -1,12 +1,18 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const CourseDetailsPage = ({ courseName, setCurrentPage }) => {
+const CourseDetailsPage = ({ courseName }) => {
+  const navigate = useNavigate();
+
   const handleAskDoubtClick = () => {
-    setCurrentPage("ask-doubt-for-course");
+    // We pass the courseName via state to the next route
+    navigate("/student/ask-doubt", { state: { courseName: courseName } });
   };
 
   const handleViewQuestionsClick = () => {
-    setCurrentPage("question-history-for-course");
+    navigate("/student/question-history", {
+      state: { courseName: courseName },
+    });
   };
 
   return (
@@ -31,10 +37,9 @@ const CourseDetailsPage = ({ courseName, setCurrentPage }) => {
           </button>
         </div>
 
-        {/* --- নতুন বাটনটি এখানে যোগ করা হয়েছে --- */}
         <div className="flex justify-center mt-8">
           <button
-            onClick={() => setCurrentPage("student-dashboard")}
+            onClick={() => navigate("/student/dashboard")}
             className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg"
           >
             Back to Dashboard

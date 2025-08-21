@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom"; // 1. useNavigate এবং useLocation ইম্পোর্ট করা হয়েছে
 import api from "../../services/api";
 
 const courseSubjectsData = {
@@ -26,15 +27,18 @@ const courseSubjectsData = {
 };
 
 const AskDoubtForm = ({
-  setCurrentPage,
+  // setCurrentPage prop টি আর প্রয়োজন নেই
   loggedInUser,
   addNotification,
   isFollowUp = false,
   originalQuestion = null,
   onSuccess,
   onClose,
-  preselectedCourseName = null,
 }) => {
+  const navigate = useNavigate(); // 2. useNavigate হুক ব্যবহার করা হয়েছে
+  const location = useLocation();
+  const preselectedCourseName = location.state?.courseName;
+
   const [doubtDescription, setDoubtDescription] = useState("");
   const [doubtTitle, setDoubtTitle] = useState("");
   const [selectedCourse, setSelectedCourse] = useState(
@@ -47,8 +51,6 @@ const AskDoubtForm = ({
   const [isPosted, setIsPosted] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
-
-  // --- নতুন স্টেট: বড় করে দেখার জন্য ---
   const [enlargedImage, setEnlargedImage] = useState(null);
 
   useEffect(() => {
@@ -150,8 +152,9 @@ const AskDoubtForm = ({
         await api.post("/questions", payload);
         setIsPosted(true);
         setTimeout(() => {
-          setCurrentPage("student-dashboard");
-        }, 0);
+          // 3. setCurrentPage এর পরিবর্তে navigate ব্যবহার করা হয়েছে
+          navigate("/student/dashboard");
+        },0);
       }
     } catch (err) {
       setError("Failed to post your doubt. Please try again.");
@@ -159,7 +162,6 @@ const AskDoubtForm = ({
     }
   };
 
-  // --- নতুন হ্যান্ডলার: ইমেজ বড় করার এবং বন্ধ করার জন্য ---
   const handleEnlargeImage = (imageUrl) => {
     setEnlargedImage(imageUrl);
   };
@@ -202,7 +204,7 @@ const AskDoubtForm = ({
         </h2>
         {isPosted && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md mb-4">
-            Success! Your doubt has been posted.
+            Success! Your doubt has been posted. Redirecting to dashboard...
           </div>
         )}
 
@@ -354,7 +356,6 @@ const AskDoubtForm = ({
           </div>
         </form>
 
-        {/* --- নতুন: ইমেজ বড় করে দেখানোর মোডাল --- */}
         {enlargedImage && (
           <div
             className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"

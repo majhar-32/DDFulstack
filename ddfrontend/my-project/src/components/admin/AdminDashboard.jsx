@@ -1,44 +1,70 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
-const AdminDashboard = ({ setCurrentPage, availableCourses }) => {
-  const [studentCount, setStudentCount] = useState(0);
-  const [teacherCount, setTeacherCount] = useState(0);
-  const [courseCount, setCourseCount] = useState(0);
-  const [pendingQuestionsCount, setPendingQuestionsCount] = useState(0);
-  const [totalRevenue, setTotalRevenue] = useState(0);
+const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    studentCount: 0,
+    teacherCount: 0,
+    courseCount: 0,
+    pendingQuestionsCount: 0,
+    totalRevenue: 0,
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const students =
-      JSON.parse(localStorage.getItem("doubtDeskStudents")) || [];
-    setStudentCount(students.length);
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        // Fetch all required data in parallel
+        const [
+          studentsRes,
+          teachersRes,
+          coursesRes,
+          questionsRes,
+          moneyflowRes,
+        ] = await Promise.all([
+          api.get("/admin/students"),
+          api.get("/admin/teachers"),
+          api.get("/courses"),
+          api.get("/admin/questions"),
+          api.get("/admin/moneyflow"),
+        ]);
 
-    const teachers =
-      JSON.parse(localStorage.getItem("doubtDeskTeachers")) || [];
-    const activeTeachers = teachers.filter(
-      (teacher) => teacher.isActive !== false
+        const pendingQuestions = questionsRes.data.filter(
+          (q) => q.status === "pending" || q.status === "follow-up-pending"
+        ).length;
+
+        const totalRevenue = moneyflowRes.data.reduce(
+          (sum, item) => sum + item.amount,
+          0
+        );
+
+        setStats({
+          studentCount: studentsRes.data.length,
+          teacherCount: teachersRes.data.length,
+          courseCount: coursesRes.data.length,
+          pendingQuestionsCount: pendingQuestions,
+          totalRevenue: totalRevenue,
+        });
+      } catch (error) {
+        console.error("Failed to load dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <p className="text-lg">Loading Dashboard...</p>
+      </div>
     );
-    setTeacherCount(activeTeachers.length);
-
-    setCourseCount(availableCourses.length);
-
-    const questions =
-      JSON.parse(localStorage.getItem("doubtDeskQuestions")) || [];
-    const pending = questions.filter(
-      (q) => q.status === "pending" || q.status === "follow-up-pending"
-    );
-    setPendingQuestionsCount(pending.length);
-
-    const enrolledCourses =
-      JSON.parse(localStorage.getItem("enrolledCourses")) || [];
-    const revenue = enrolledCourses.reduce((sum, enrollment) => {
-      const coursePrice =
-        availableCourses.find((c) => c.courseName === enrollment.courseName)
-          ?.priceText || "0 BDT";
-      const priceValue = parseInt(coursePrice.replace(" BDT", "")) || 0;
-      return sum + priceValue;
-    }, 0);
-    setTotalRevenue(revenue);
-  }, [availableCourses]);
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-8">
@@ -50,11 +76,11 @@ const AdminDashboard = ({ setCurrentPage, availableCourses }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-blue-50 p-6 rounded-lg shadow-md">
             <h3 className="text-2xl font-semibold text-blue-700 mb-3">
-              Students ({studentCount})
+              Students ({stats.studentCount})
             </h3>
             <p className="text-gray-600">Manage student accounts and data.</p>
             <button
-              onClick={() => setCurrentPage("admin-students")}
+              onClick={() => navigate("/admin/students")}
               className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-md font-medium transition-colors duration-200 shadow-md"
             >
               View Students
@@ -63,13 +89,13 @@ const AdminDashboard = ({ setCurrentPage, availableCourses }) => {
 
           <div className="bg-green-50 p-6 rounded-lg shadow-md">
             <h3 className="text-2xl font-semibold text-green-700 mb-3">
-              Teachers ({teacherCount})
+              Teachers ({stats.teacherCount})
             </h3>
             <p className="text-gray-600">
               Manage teacher accounts and assignments.
             </p>
             <button
-              onClick={() => setCurrentPage("admin-teachers")}
+              onClick={() => navigate("/admin/teachers")}
               className="mt-4 bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md font-medium transition-colors duration-200 shadow-md"
             >
               View Teachers
@@ -78,13 +104,13 @@ const AdminDashboard = ({ setCurrentPage, availableCourses }) => {
 
           <div className="bg-yellow-50 p-6 rounded-lg shadow-md">
             <h3 className="text-2xl font-semibold text-yellow-700 mb-3">
-              Courses ({courseCount})
+              Courses ({stats.courseCount})
             </h3>
             <p className="text-gray-600">
               Manage course offerings and content.
             </p>
             <button
-              onClick={() => setCurrentPage("admin-courses")}
+              onClick={() => navigate("/admin/courses")}
               className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-md font-medium transition-colors duration-200 shadow-md"
             >
               View Courses
@@ -93,13 +119,13 @@ const AdminDashboard = ({ setCurrentPage, availableCourses }) => {
 
           <div className="bg-purple-50 p-6 rounded-lg shadow-md">
             <h3 className="text-2xl font-semibold text-purple-700 mb-3">
-              Questions & Answers ({pendingQuestionsCount} Pending)
+              Questions & Answers ({stats.pendingQuestionsCount} Pending)
             </h3>
             <p className="text-gray-600">
               Monitor and review all questions and solutions.
             </p>
             <button
-              onClick={() => setCurrentPage("admin-qa")}
+              onClick={() => navigate("/admin/qa")}
               className="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-5 py-2 rounded-md font-medium transition-colors duration-200 shadow-md"
             >
               View Q&A
@@ -108,26 +134,18 @@ const AdminDashboard = ({ setCurrentPage, availableCourses }) => {
 
           <div className="bg-red-50 p-6 rounded-lg shadow-md">
             <h3 className="text-2xl font-semibold text-red-700 mb-3">
-              Money Flow ({totalRevenue} BDT)
+              Money Flow ({stats.totalRevenue} BDT)
             </h3>
             <p className="text-gray-600">
               Track financial transactions and revenue.
             </p>
             <button
-              onClick={() => setCurrentPage("admin-money-flow")}
+              onClick={() => navigate("/admin/money-flow")}
               className="mt-4 bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md font-medium transition-colors duration-200 shadow-md"
             >
               View Details
             </button>
           </div>
-        </div>
-        <div className="flex justify-center mt-8">
-          <button
-            onClick={() => setCurrentPage("home")}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition-all duration-300 transform hover:scale-105 shadow-md"
-          >
-            Logout
-          </button>
         </div>
       </div>
     </div>
