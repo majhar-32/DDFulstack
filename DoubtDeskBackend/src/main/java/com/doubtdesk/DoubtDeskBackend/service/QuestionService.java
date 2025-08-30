@@ -3,6 +3,8 @@ package com.doubtdesk.DoubtDeskBackend.service;
 import com.doubtdesk.DoubtDeskBackend.dto.QuestionRequestDTO;
 import com.doubtdesk.DoubtDeskBackend.dto.QuestionResponseDTO;
 import com.doubtdesk.DoubtDeskBackend.dto.SolutionRequestDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -14,8 +16,8 @@ public interface QuestionService {
 
     List<QuestionResponseDTO> getQuestionsByStudentEmailAndCourse(String email, String courseName);
 
-    // --- এই মেথড সিগনেচারটি ঠিক করা হয়েছে ---
-    List<QuestionResponseDTO> getPendingQuestionsForTeacher(String teacherEmail);
+    // মেথড সিগনেচার আপডেট করা হলো
+    Page<QuestionResponseDTO> getPendingQuestionsForTeacher(String teacherEmail, Pageable pageable);
 
     List<QuestionResponseDTO> getSolvedQuestionsByTeacher(String email);
 
@@ -24,6 +26,5 @@ public interface QuestionService {
     void markQuestionAsSatisfied(Long questionId);
 
     QuestionResponseDTO createFollowUpQuestion(Long originalQuestionId, QuestionRequestDTO followUpRequestDTO);
-    QuestionResponseDTO getQuestionById(Long questionId); // নতুন মেথড
-
+    QuestionResponseDTO getQuestionById(Long questionId);
 }

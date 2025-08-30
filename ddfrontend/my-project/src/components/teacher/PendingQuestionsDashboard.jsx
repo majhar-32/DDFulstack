@@ -12,6 +12,11 @@ const PendingQuestionsDashboard = () => {
 
   const [enlargedImage, setEnlargedImage] = useState(null);
 
+  // পেইজিনেশন এর জন্য নতুন স্টেট যোগ করা হলো
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const pageSize = 5; // প্রতি পেজে কতগুলো প্রশ্ন থাকবে
+
   const fetchPendingQuestions = async () => {
     if (!loggedInUser?.email) {
       setLoading(false);
@@ -19,10 +24,13 @@ const PendingQuestionsDashboard = () => {
     }
     try {
       setLoading(true);
+      // পেজ এবং সাইজ প্যারামিটার API কলে যুক্ত করা হলো
       const response = await api.get(
-        `/questions/pending?email=${loggedInUser.email}`
+        `/questions/pending?email=${loggedInUser.email}&page=${currentPage}&size=${pageSize}`
       );
-      setPendingQuestions(response.data);
+
+      setPendingQuestions(response.data.content); // `content` থেকে প্রশ্নগুলো নিন
+      setTotalPages(response.data.totalPages); // মোট পেজের সংখ্যা সেট করুন
       setError(null);
     } catch (err) {
       setError("Failed to load pending questions.");
@@ -34,7 +42,19 @@ const PendingQuestionsDashboard = () => {
 
   useEffect(() => {
     fetchPendingQuestions();
-  }, [loggedInUser]);
+  }, [loggedInUser, currentPage]); // currentPage পরিবর্তন হলে নতুন করে প্রশ্ন লোড হবে
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   const handleSolveClick = (question) => {
     setSolvingQuestion(question);
@@ -67,7 +87,7 @@ const PendingQuestionsDashboard = () => {
         <h2 className="text-4xl font-bold text-purple-600 mb-6">
           Pending Questions
         </h2>
-        {pendingQuestions.length === 0 ? (
+        {pendingQuestions.length === 0 && currentPage === 0 ? (
           <p className="text-lg text-gray-700">
             No pending questions assigned to you.
           </p>
@@ -146,6 +166,28 @@ const PendingQuestionsDashboard = () => {
           </div>
         )}
       </div>
+      {/* পেইজিনেশন বাটন */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center mt-6 space-x-4">
+          <button
+            onClick={handlePreviousPage}
+            disabled={currentPage === 0}
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span className="text-lg text-gray-700">
+            Page {currentPage + 1} of {totalPages}
+          </span>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages - 1}
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {solvingQuestion && (
         <SolutionForm

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -65,11 +67,12 @@ public class QuestionController {
         return new ResponseEntity<>(followUp, HttpStatus.CREATED);
     }
 
-    // --- ডুপ্লিকেট মেথডটি মুছে ফেলা হয়েছে ---
+    // মেথড সিগনেচার আপডেট করা হলো
     @GetMapping("/pending")
-    public ResponseEntity<List<QuestionResponseDTO>> getPendingQuestions(@RequestParam String email) {
-        return ResponseEntity.ok(questionService.getPendingQuestionsForTeacher(email));
+    public ResponseEntity<Page<QuestionResponseDTO>> getPendingQuestions(@RequestParam String email, Pageable pageable) {
+        return ResponseEntity.ok(questionService.getPendingQuestionsForTeacher(email, pageable));
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<QuestionResponseDTO> getQuestionById(@PathVariable Long id) {
         try {

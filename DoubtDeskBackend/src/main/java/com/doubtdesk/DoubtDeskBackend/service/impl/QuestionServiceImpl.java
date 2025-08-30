@@ -8,6 +8,9 @@ import com.doubtdesk.DoubtDeskBackend.entity.*;
 import com.doubtdesk.DoubtDeskBackend.repository.*;
 import com.doubtdesk.DoubtDeskBackend.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -62,16 +65,27 @@ public class QuestionServiceImpl implements QuestionService {
         return mapToResponseDTO(savedQuestion, student);
     }
 
+    // আপডেট করা মেথড
     @Override
-    public List<QuestionResponseDTO> getPendingQuestionsForTeacher(String teacherEmail) {
-        List<Question> pending = questionRepository.findByStatus("pending");
-        List<Question> followUps = questionRepository.findFollowUpQuestionsForTeacher(teacherEmail);
-        List<Question> allPendingForTeacher = Stream.concat(pending.stream(), followUps.stream())
-                .distinct()
-                .collect(Collectors.toList());
-        return allPendingForTeacher.stream()
+    public Page<QuestionResponseDTO> getPendingQuestionsForTeacher(String teacherEmail, Pageable pageable) {
+        Page<Question> pending = questionRepository.findByStatus("pending", pageable);
+        Page<Question> followUps = questionRepository.findFollowUpQuestionsForTeacher(teacherEmail, pageable);
+
+        List<Question> allPendingQuestions = new java.util.ArrayList<>();
+        allPendingQuestions.addAll(pending.getContent());
+        allPendingQuestions.addAll(followUps.getContent());
+
+        // ডুপ্লিকেট প্রশ্ন বাদ দেওয়া
+        List<Question> distinctQuestions = allPendingQuestions.stream().distinct().collect(Collectors.toList());
+
+        // মোট প্রশ্নের সংখ্যা গণনা
+        long totalQuestions = questionRepository.countByStatus("pending") + questionRepository.findFollowUpQuestionsForTeacher(teacherEmail, Pageable.unpaged()).getTotalElements();
+
+        List<QuestionResponseDTO> dtos = distinctQuestions.stream()
                 .map(q -> mapToResponseDTO(q, q.getAskingStudents().stream().findFirst().orElse(null)))
                 .collect(Collectors.toList());
+
+        return new PageImpl<>(dtos, pageable, totalQuestions);
     }
 
     // --- মূল পরিবর্তন এখানে ---
@@ -103,7 +117,7 @@ public class QuestionServiceImpl implements QuestionService {
         if (question.getAnswer() != null) {
             dto.setSolutionText(question.getAnswer().getAnswerText());
             if (question.getAnswer().getTeacher() != null && question.getAnswer().getTeacher().getUser() != null) {
-                dto.setSolvedByTeacherName(question.getAnswer().getTeacher().getUser().getName());
+                dto.setSolvedByTeacherName(question.getAnswer().getTeacher().getUser().getEmail()); // এখানে ইমেইল ব্যবহার করা হলো
             }
             if (question.getAnswer().getAttachments() != null && !question.getAnswer().getAttachments().isEmpty()) {
                 dto.setSolutionAttachments(question.getAnswer().getAttachments().stream()
@@ -116,7 +130,6 @@ public class QuestionServiceImpl implements QuestionService {
         return dto;
     }
 
-    // --- বাকি মেথডগুলো অপরিবর্তিত ---
     @Override
     public List<QuestionResponseDTO> getQuestionsByStudentEmail(String email) {
         List<Question> questions = questionRepository.findQuestionsByStudentEmail(email);
