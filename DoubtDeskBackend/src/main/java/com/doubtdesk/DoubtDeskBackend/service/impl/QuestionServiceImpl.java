@@ -130,22 +130,33 @@ public class QuestionServiceImpl implements QuestionService {
         return dto;
     }
 
+    // নতুন পেজিনেশন সহ মেথড
     @Override
-    public List<QuestionResponseDTO> getQuestionsByStudentEmail(String email) {
-        List<Question> questions = questionRepository.findQuestionsByStudentEmail(email);
+    public Page<QuestionResponseDTO> getQuestionsByStudentEmail(String email, Pageable pageable) {
         User user = userRepository.findByEmail(email).orElse(null);
         Student student = (user != null) ? studentRepository.findByUser_UserId(user.getUserId()).orElse(null) : null;
-        if (student == null) return List.of();
-        return questions.stream().map(question -> mapToResponseDTO(question, student)).collect(Collectors.toList());
+        if (student == null) {
+            return Page.empty();
+        }
+        Page<Question> questionsPage = questionRepository.findQuestionsByStudentEmail(email, pageable);
+        List<QuestionResponseDTO> dtos = questionsPage.getContent().stream()
+                .map(question -> mapToResponseDTO(question, student))
+                .collect(Collectors.toList());
+        return new PageImpl<>(dtos, pageable, questionsPage.getTotalElements());
     }
 
     @Override
-    public List<QuestionResponseDTO> getQuestionsByStudentEmailAndCourse(String email, String courseName) {
-        List<Question> questions = questionRepository.findQuestionsByStudentEmailAndCourseName(email, courseName);
+    public Page<QuestionResponseDTO> getQuestionsByStudentEmailAndCourse(String email, String courseName, Pageable pageable) {
         User user = userRepository.findByEmail(email).orElse(null);
         Student student = (user != null) ? studentRepository.findByUser_UserId(user.getUserId()).orElse(null) : null;
-        if (student == null) return List.of();
-        return questions.stream().map(question -> mapToResponseDTO(question, student)).collect(Collectors.toList());
+        if (student == null) {
+            return Page.empty();
+        }
+        Page<Question> questionsPage = questionRepository.findQuestionsByStudentEmailAndCourseName(email, courseName, pageable);
+        List<QuestionResponseDTO> dtos = questionsPage.getContent().stream()
+                .map(question -> mapToResponseDTO(question, student))
+                .collect(Collectors.toList());
+        return new PageImpl<>(dtos, pageable, questionsPage.getTotalElements());
     }
 
     @Override

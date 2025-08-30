@@ -2,10 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../../services/api";
 import AskDoubtForm from "./AskDoubtForm";
-import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
+import { AuthContext } from "../../context/AuthContext";
 
 const QuestionHistoryPage = () => {
-  const { loggedInUser, addNotification } = useContext(AuthContext); // useContext ব্যবহার করে state and setter function নিন
+  const { loggedInUser, addNotification } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,6 +19,11 @@ const QuestionHistoryPage = () => {
     useState(null);
   const [enlargedImage, setEnlargedImage] = useState(null);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const pageSize = 5; // You can adjust the page size as needed
+
   const fetchQuestions = async () => {
     if (!loggedInUser?.email) {
       setLoading(false);
@@ -26,12 +31,13 @@ const QuestionHistoryPage = () => {
     }
     try {
       setLoading(true);
-      let url = `/questions/by-student?email=${loggedInUser.email}`;
+      let url = `/questions/by-student?email=${loggedInUser.email}&page=${currentPage}&size=${pageSize}`;
       if (filterByCourseName) {
         url += `&courseName=${encodeURIComponent(filterByCourseName)}`;
       }
       const response = await api.get(url);
-      setQuestions(response.data);
+      setQuestions(response.data.content);
+      setTotalPages(response.data.totalPages);
       setError(null);
     } catch (err) {
       setError("Failed to load question history.");
@@ -43,7 +49,7 @@ const QuestionHistoryPage = () => {
 
   useEffect(() => {
     fetchQuestions();
-  }, [loggedInUser, filterByCourseName]);
+  }, [loggedInUser, filterByCourseName, currentPage]); // Re-fetch on page change
 
   const handleMarkSatisfied = async (questionId) => {
     try {
@@ -77,6 +83,18 @@ const QuestionHistoryPage = () => {
     setEnlargedImage(null);
   };
 
+  const handleNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   if (loading) return <p className="text-center p-8">Loading questions...</p>;
   if (error) return <p className="text-center text-red-500 p-8">{error}</p>;
 
@@ -89,7 +107,7 @@ const QuestionHistoryPage = () => {
             : "Your Question History"}
         </h2>
 
-        {questions.length === 0 ? (
+        {questions.length === 0 && currentPage === 0 ? (
           <p className="text-lg text-gray-700 text-center">
             No questions found.
           </p>
@@ -246,6 +264,27 @@ const QuestionHistoryPage = () => {
                 </div>
               );
             })}
+          </div>
+        )}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center mt-6 space-x-4">
+            <button
+              onClick={handlePreviousPage}
+              disabled={currentPage === 0}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-lg text-gray-700">
+              Page {currentPage + 1} of {totalPages}
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages - 1}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
         )}
 

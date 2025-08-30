@@ -26,16 +26,18 @@ public class QuestionController {
         return new ResponseEntity<>(newQuestion, HttpStatus.CREATED);
     }
 
+    // মেথড সিগনেচার আপডেট করা হলো
     @GetMapping("/by-student")
-    public ResponseEntity<List<QuestionResponseDTO>> getQuestionsByStudent(
+    public ResponseEntity<Page<QuestionResponseDTO>> getQuestionsByStudent(
             @RequestParam String email,
-            @RequestParam(required = false) String courseName) {
+            @RequestParam(required = false) String courseName,
+            Pageable pageable) { // নতুন Pageable প্যারামিটার যোগ করা হয়েছে
 
-        List<QuestionResponseDTO> questions;
+        Page<QuestionResponseDTO> questions;
         if (courseName != null && !courseName.isEmpty()) {
-            questions = questionService.getQuestionsByStudentEmailAndCourse(email, courseName);
+            questions = questionService.getQuestionsByStudentEmailAndCourse(email, courseName, pageable);
         } else {
-            questions = questionService.getQuestionsByStudentEmail(email);
+            questions = questionService.getQuestionsByStudentEmail(email, pageable);
         }
         return ResponseEntity.ok(questions);
     }

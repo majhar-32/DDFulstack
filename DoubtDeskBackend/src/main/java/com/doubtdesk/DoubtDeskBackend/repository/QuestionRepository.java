@@ -14,10 +14,10 @@ import java.util.List;
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     @Query("SELECT q FROM Question q JOIN q.askingStudents s WHERE s.user.email = :email")
-    List<Question> findQuestionsByStudentEmail(@Param("email") String email);
+    Page<Question> findQuestionsByStudentEmail(@Param("email") String email, Pageable pageable);
 
     @Query("SELECT q FROM Question q JOIN q.askingStudents s WHERE s.user.email = :email AND q.course.title = :courseName")
-    List<Question> findQuestionsByStudentEmailAndCourseName(@Param("email") String email, @Param("courseName") String courseName);
+    Page<Question> findQuestionsByStudentEmailAndCourseName(@Param("email") String email, @Param("courseName") String courseName, Pageable pageable);
 
     // ১. শুধুমাত্র সাধারণ পেন্ডিং প্রশ্ন খোঁজার জন্য এই মেথডটি আপডেট করা হয়েছে
     Page<Question> findByStatus(String status, Pageable pageable);

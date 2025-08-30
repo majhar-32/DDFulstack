@@ -12,11 +12,12 @@ public interface QuestionService {
 
     QuestionResponseDTO createQuestion(QuestionRequestDTO questionRequestDTO);
 
-    List<QuestionResponseDTO> getQuestionsByStudentEmail(String email);
-
-    List<QuestionResponseDTO> getQuestionsByStudentEmailAndCourse(String email, String courseName);
+    // মেথড সিগনেচার আপডেট করা হলো
+    Page<QuestionResponseDTO> getQuestionsByStudentEmail(String email, Pageable pageable);
 
     // মেথড সিগনেচার আপডেট করা হলো
+    Page<QuestionResponseDTO> getQuestionsByStudentEmailAndCourse(String email, String courseName, Pageable pageable);
+
     Page<QuestionResponseDTO> getPendingQuestionsForTeacher(String teacherEmail, Pageable pageable);
 
     List<QuestionResponseDTO> getSolvedQuestionsByTeacher(String email);
