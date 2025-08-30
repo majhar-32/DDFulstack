@@ -1,15 +1,15 @@
 import React, { useState, useContext } from "react";
 import api from "../../services/api";
-import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
+import { AuthContext } from "../../context/AuthContext";
+import AttachmentDisplay from "../common/AttachmentDisplay"; // নতুন কম্পোনেন্ট ইম্পোর্ট
 
 const SolutionForm = ({ question, onCancel, onSolutionSuccess }) => {
-  const { loggedInUser, addNotification } = useContext(AuthContext); // useContext ব্যবহার করে state এবং ফাংশনগুলো নিন
+  const { loggedInUser, addNotification } = useContext(AuthContext);
   const [solutionText, setSolutionText] = useState("");
   const [error, setError] = useState("");
 
   const [attachments, setAttachments] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [enlargedImage, setEnlargedImage] = useState(null);
 
   const handleFileUpload = async (event) => {
     const files = event.target.files;
@@ -84,14 +84,6 @@ const SolutionForm = ({ question, onCancel, onSolutionSuccess }) => {
     }
   };
 
-  const handleEnlargeImage = (imageUrl) => {
-    setEnlargedImage(imageUrl);
-  };
-
-  const handleCloseEnlargedImage = () => {
-    setEnlargedImage(null);
-  };
-
   return (
     <>
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -136,40 +128,11 @@ const SolutionForm = ({ question, onCancel, onSolutionSuccess }) => {
               {isUploading && (
                 <p className="text-sm text-blue-600 mt-2">Uploading...</p>
               )}
-              <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {attachments.map((att, index) => (
-                  <div
-                    key={index}
-                    className="relative border rounded-lg p-2 group"
-                  >
-                    {att.fileType.startsWith("image/") ? (
-                      <img
-                        src={att.fileUrl}
-                        alt={att.fileName}
-                        className="w-full h-24 object-contain rounded-md cursor-pointer"
-                        onClick={() => handleEnlargeImage(att.fileUrl)}
-                      />
-                    ) : (
-                      <div className="h-24 flex flex-col items-center justify-center bg-gray-100 rounded-md p-2">
-                        <span className="text-3xl">📄</span>
-                        <span
-                          className="block text-xs text-gray-700 truncate w-full"
-                          title={att.fileName}
-                        >
-                          {att.fileName}
-                        </span>
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => removeAttachment(att.fileName)}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      &times;
-                    </button>
-                  </div>
-                ))}
-              </div>
+              {/* এখানে নতুন কম্পোনেন্ট ব্যবহার করা হয়েছে */}
+              <AttachmentDisplay
+                attachments={attachments}
+                onRemove={removeAttachment}
+              />
             </div>
 
             {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
@@ -191,26 +154,6 @@ const SolutionForm = ({ question, onCancel, onSolutionSuccess }) => {
           </form>
         </div>
       </div>
-
-      {enlargedImage && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
-          onClick={handleCloseEnlargedImage}
-        >
-          <img
-            src={enlargedImage}
-            alt="Enlarged"
-            className="max-w-[90vw] max-h-[90vh] cursor-pointer"
-            onClick={(e) => e.stopPropagation()}
-          />
-          <button
-            className="absolute top-4 right-4 text-white text-4xl hover:text-gray-300 cursor-pointer"
-            onClick={handleCloseEnlargedImage}
-          >
-            &times;
-          </button>
-        </div>
-      )}
     </>
   );
 };

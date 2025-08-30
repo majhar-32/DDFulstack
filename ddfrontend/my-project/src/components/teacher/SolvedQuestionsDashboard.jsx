@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import api from "../../services/api";
 import { AuthContext } from "../../context/AuthContext";
+import AttachmentDisplay from "../common/AttachmentDisplay";
 
 const SolvedQuestionsDashboard = () => {
   const { loggedInUser } = useContext(AuthContext);
@@ -9,7 +10,6 @@ const SolvedQuestionsDashboard = () => {
   const [error, setError] = useState(null);
 
   const [viewingQuestionDetails, setViewingQuestionDetails] = useState(null);
-  const [enlargedImage, setEnlargedImage] = useState(null);
 
   useEffect(() => {
     const fetchSolvedQuestions = async () => {
@@ -19,7 +19,6 @@ const SolvedQuestionsDashboard = () => {
         const response = await api.get(
           `/questions/solved-by-teacher?email=${loggedInUser.email}`
         );
-        // এখানে উত্তর দেওয়ার সময় (answerAt) অনুসারে প্রশ্নগুলোকে সাজানো হয়েছে
         const sortedQuestions = response.data.sort(
           (a, b) => new Date(b.answerAt) - new Date(a.answerAt)
         );
@@ -49,14 +48,6 @@ const SolvedQuestionsDashboard = () => {
     setViewingQuestionDetails(null);
   };
 
-  const handleEnlargeImage = (imageUrl) => {
-    setEnlargedImage(imageUrl);
-  };
-
-  const handleCloseEnlargedImage = () => {
-    setEnlargedImage(null);
-  };
-
   if (loading)
     return <p className="text-center p-8">Loading solved questions...</p>;
   if (error) return <p className="text-center text-red-500 p-8">{error}</p>;
@@ -73,7 +64,6 @@ const SolvedQuestionsDashboard = () => {
           </p>
         ) : (
           <div className="space-y-4 max-h-96 overflow-y-auto pr-4">
-            {/* ... rest of the code remains the same ... */}
             {solvedQuestions.map((question) => (
               <div
                 key={question.questionId}
@@ -116,47 +106,9 @@ const SolvedQuestionsDashboard = () => {
                 <p className="whitespace-pre-wrap">
                   {viewingQuestionDetails.description}
                 </p>
-                {viewingQuestionDetails.questionAttachments?.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-xs font-semibold text-gray-600">
-                      Attachments:
-                    </p>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {viewingQuestionDetails.questionAttachments.map(
-                        (att, index) => (
-                          <div
-                            key={index}
-                            className="relative border rounded-md p-1 hover:bg-gray-200"
-                          >
-                            {att.fileType?.startsWith("image/") ? (
-                              <img
-                                src={att.fileUrl}
-                                alt={att.fileName}
-                                className="w-20 h-20 object-contain rounded-md cursor-pointer"
-                                onClick={() => handleEnlargeImage(att.fileUrl)}
-                              />
-                            ) : (
-                              <a
-                                href={att.fileUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-20 h-20 flex flex-col items-center justify-center bg-gray-100 rounded-md p-1"
-                              >
-                                <span className="text-2xl">📄</span>
-                                <span
-                                  className="block text-xs text-gray-500 truncate w-full"
-                                  title={att.fileName}
-                                >
-                                  File
-                                </span>
-                              </a>
-                            )}
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-                )}
+                <AttachmentDisplay
+                  attachments={viewingQuestionDetails.questionAttachments}
+                />
               </div>
             </div>
 
@@ -166,47 +118,9 @@ const SolvedQuestionsDashboard = () => {
                 <p className="whitespace-pre-wrap">
                   {viewingQuestionDetails.solutionText}
                 </p>
-                {viewingQuestionDetails.solutionAttachments?.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-xs font-semibold text-gray-600">
-                      Attachments:
-                    </p>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {viewingQuestionDetails.solutionAttachments.map(
-                        (att, index) => (
-                          <div
-                            key={index}
-                            className="relative border rounded-md p-1 hover:bg-gray-200"
-                          >
-                            {att.fileType?.startsWith("image/") ? (
-                              <img
-                                src={att.fileUrl}
-                                alt={att.fileName}
-                                className="w-20 h-20 object-contain rounded-md cursor-pointer"
-                                onClick={() => handleEnlargeImage(att.fileUrl)}
-                              />
-                            ) : (
-                              <a
-                                href={att.fileUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-20 h-20 flex flex-col items-center justify-center bg-gray-100 rounded-md p-1"
-                              >
-                                <span className="text-2xl">📄</span>
-                                <span
-                                  className="block text-xs text-gray-500 truncate w-full"
-                                  title={att.fileName}
-                                >
-                                  File
-                                </span>
-                              </a>
-                            )}
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-                )}
+                <AttachmentDisplay
+                  attachments={viewingQuestionDetails.solutionAttachments}
+                />
               </div>
             </div>
 
@@ -219,26 +133,6 @@ const SolvedQuestionsDashboard = () => {
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {enlargedImage && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
-          onClick={handleCloseEnlargedImage}
-        >
-          <img
-            src={enlargedImage}
-            alt="Enlarged"
-            className="max-w-[90vw] max-h-[90vh] cursor-pointer"
-            onClick={(e) => e.stopPropagation()}
-          />
-          <button
-            className="absolute top-4 right-4 text-white text-4xl hover:text-gray-300 cursor-pointer"
-            onClick={handleCloseEnlargedImage}
-          >
-            &times;
-          </button>
         </div>
       )}
     </div>

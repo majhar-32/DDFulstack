@@ -7,10 +7,12 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/doubtdesk_db
       - SPRING_DATASOURCE_USERNAME=doubtdesk_user
       - SPRING_DATASOURCE_PASSWORD=your_secure_password
-    # এখানে পরিবর্তন করা হয়েছে
+      - file.upload-dir=/app/uploads # এই লাইনটি যোগ করুন
     depends_on:
       mysql:
-        condition: service_healthy # mysql সার্ভিসটি healthy না হওয়া পর্যন্ত অপেক্ষা করবে
+        condition: service_healthy
+    volumes:
+      - ./uploads:/app/uploads # এই লাইনটি যোগ করুন
 
   mysql:
     image: mysql:8.0
@@ -23,7 +25,6 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-    # নতুন healthcheck অংশটি এখানে যোগ করা হয়েছে
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s

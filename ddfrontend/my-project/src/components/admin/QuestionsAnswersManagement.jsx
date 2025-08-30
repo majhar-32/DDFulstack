@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট
+import api from "../../services/api";
+import AttachmentDisplay from "../common/AttachmentDisplay"; // নতুন কম্পোনেন্ট ইম্পোর্ট
 
 const QuestionsAnswersManagement = () => {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [viewingQuestion, setViewingQuestion] = useState(null); // মোডালের জন্য state
+  const [viewingQuestion, setViewingQuestion] = useState(null);
 
   useEffect(() => {
     fetchQuestions();
@@ -14,7 +15,7 @@ const QuestionsAnswersManagement = () => {
   const fetchQuestions = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/admin/questions"); // নতুন API এন্ডপয়েন্ট
+      const response = await api.get("/admin/questions");
       setQuestions(response.data);
       setError(null);
     } catch (err) {
@@ -32,7 +33,7 @@ const QuestionsAnswersManagement = () => {
       )
     ) {
       try {
-        await api.delete(`/admin/questions/${questionId}`); // API তে ডিলিট রিকোয়েস্ট
+        await api.delete(`/admin/questions/${questionId}`);
         setQuestions(questions.filter((q) => q.questionId !== questionId));
       } catch (err) {
         alert("Failed to delete the question. Please try again.");
@@ -133,6 +134,9 @@ const QuestionsAnswersManagement = () => {
               <div className="p-3 bg-gray-50 rounded-md border">
                 <p className="font-semibold">Question:</p>
                 <p>{viewingQuestion.description}</p>
+                <AttachmentDisplay
+                  attachments={viewingQuestion.questionAttachments}
+                />
               </div>
             </div>
             <div className="text-right mt-6">

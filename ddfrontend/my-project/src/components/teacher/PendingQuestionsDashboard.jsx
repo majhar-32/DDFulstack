@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import SolutionForm from "./SolutionForm";
 import api from "../../services/api";
-import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
+import { AuthContext } from "../../context/AuthContext";
+import AttachmentDisplay from "../common/AttachmentDisplay"; // নতুন কম্পোনেন্ট ইম্পোর্ট
 
 const PendingQuestionsDashboard = () => {
-  const { loggedInUser, addNotification } = useContext(AuthContext); // useContext ব্যবহার করে state এবং ফাংশনগুলো নিন
+  const { loggedInUser, addNotification } = useContext(AuthContext);
   const [pendingQuestions, setPendingQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,10 +13,9 @@ const PendingQuestionsDashboard = () => {
 
   const [enlargedImage, setEnlargedImage] = useState(null);
 
-  // পেইজিনেশন এর জন্য নতুন স্টেট যোগ করা হলো
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const pageSize = 5; // প্রতি পেজে কতগুলো প্রশ্ন থাকবে
+  const pageSize = 5;
 
   const fetchPendingQuestions = async () => {
     if (!loggedInUser?.email) {
@@ -24,7 +24,6 @@ const PendingQuestionsDashboard = () => {
     }
     try {
       setLoading(true);
-      // এখানে `&sort=postAt,desc` যোগ করা হয়েছে
       const response = await api.get(
         `/questions/pending?email=${loggedInUser.email}&page=${currentPage}&size=${pageSize}&sort=postAt,desc`
       );
@@ -41,7 +40,7 @@ const PendingQuestionsDashboard = () => {
   };
   useEffect(() => {
     fetchPendingQuestions();
-  }, [loggedInUser, currentPage]); // currentPage পরিবর্তন হলে নতুন করে প্রশ্ন লোড হবে
+  }, [loggedInUser, currentPage]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages - 1) {
@@ -66,14 +65,6 @@ const PendingQuestionsDashboard = () => {
 
   const handleCancelSolve = () => {
     setSolvingQuestion(null);
-  };
-
-  const handleEnlargeImage = (imageUrl) => {
-    setEnlargedImage(imageUrl);
-  };
-
-  const handleCloseEnlargedImage = () => {
-    setEnlargedImage(null);
   };
 
   if (loading)
@@ -109,50 +100,9 @@ const PendingQuestionsDashboard = () => {
                       (Follow-up Question)
                     </p>
                   )}
-
-                  {question.questionAttachments &&
-                    question.questionAttachments.length > 0 && (
-                      <div className="mt-2">
-                        <p className="text-xs font-semibold text-gray-600">
-                          Attachments:
-                        </p>
-                        <div className="flex flex-wrap gap-2 mt-1">
-                          {question.questionAttachments.map((att, index) => (
-                            <div
-                              key={index}
-                              className="relative border rounded-md p-1 hover:bg-gray-200"
-                            >
-                              {att.fileType &&
-                              att.fileType.startsWith("image/") ? (
-                                <img
-                                  src={att.fileUrl}
-                                  alt={att.fileName}
-                                  className="w-16 h-16 object-contain rounded-md cursor-pointer"
-                                  onClick={() =>
-                                    handleEnlargeImage(att.fileUrl)
-                                  }
-                                />
-                              ) : (
-                                <a
-                                  href={att.fileUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="w-16 h-16 flex flex-col items-center justify-center bg-gray-100 rounded-md p-1"
-                                >
-                                  <span className="text-2xl">📄</span>
-                                  <span
-                                    className="block text-xs text-gray-500 truncate w-full"
-                                    title={att.fileName}
-                                  >
-                                    File
-                                  </span>
-                                </a>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                  <AttachmentDisplay
+                    attachments={question.questionAttachments}
+                  />
                 </div>
                 <button
                   onClick={() => handleSolveClick(question)}
@@ -165,7 +115,6 @@ const PendingQuestionsDashboard = () => {
           </div>
         )}
       </div>
-      {/* পেইজিনেশন বাটন */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center mt-6 space-x-4">
           <button
@@ -194,26 +143,6 @@ const PendingQuestionsDashboard = () => {
           onCancel={handleCancelSolve}
           onSolutionSuccess={handleSolutionSuccess}
         />
-      )}
-
-      {enlargedImage && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
-          onClick={handleCloseEnlargedImage}
-        >
-          <img
-            src={enlargedImage}
-            alt="Enlarged"
-            className="max-w-[90vw] max-h-[90vh] cursor-pointer"
-            onClick={(e) => e.stopPropagation()}
-          />
-          <button
-            className="absolute top-4 right-4 text-white text-4xl hover:text-gray-300 cursor-pointer"
-            onClick={handleCloseEnlargedImage}
-          >
-            &times;
-          </button>
-        </div>
       )}
     </div>
   );

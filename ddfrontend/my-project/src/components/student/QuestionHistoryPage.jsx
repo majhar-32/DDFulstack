@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import api from "../../services/api";
 import AskDoubtForm from "./AskDoubtForm";
 import { AuthContext } from "../../context/AuthContext";
+import AttachmentDisplay from "../common/AttachmentDisplay"; // নতুন কম্পোনেন্ট ইম্পোর্ট
 
 const QuestionHistoryPage = () => {
   const { loggedInUser, addNotification } = useContext(AuthContext);
@@ -17,12 +18,11 @@ const QuestionHistoryPage = () => {
   const [showFollowUpForm, setShowFollowUpForm] = useState(false);
   const [selectedOriginalQuestion, setSelectedOriginalQuestion] =
     useState(null);
-  const [enlargedImage, setEnlargedImage] = useState(null);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const pageSize = 5; // You can adjust the page size as needed
+  const pageSize = 5;
 
   const fetchQuestions = async () => {
     if (!loggedInUser?.email) {
@@ -31,7 +31,6 @@ const QuestionHistoryPage = () => {
     }
     try {
       setLoading(true);
-      // এখানে `&sort=postAt,desc` যোগ করা হয়েছে
       let url = `/questions/by-student?email=${loggedInUser.email}&page=${currentPage}&size=${pageSize}&sort=postAt,desc`;
       if (filterByCourseName) {
         url += `&courseName=${encodeURIComponent(filterByCourseName)}`;
@@ -50,7 +49,7 @@ const QuestionHistoryPage = () => {
 
   useEffect(() => {
     fetchQuestions();
-  }, [loggedInUser, filterByCourseName, currentPage]); // Re-fetch on page change
+  }, [loggedInUser, filterByCourseName, currentPage]);
 
   const handleMarkSatisfied = async (questionId) => {
     try {
@@ -74,14 +73,6 @@ const QuestionHistoryPage = () => {
   const handleFollowUpSuccess = () => {
     setShowFollowUpForm(false);
     fetchQuestions();
-  };
-
-  const handleEnlargeImage = (imageUrl) => {
-    setEnlargedImage(imageUrl);
-  };
-
-  const handleCloseEnlargedImage = () => {
-    setEnlargedImage(null);
   };
 
   const handleNextPage = () => {
@@ -121,7 +112,6 @@ const QuestionHistoryPage = () => {
                   key={question.questionId}
                   className="bg-purple-50 p-4 rounded-lg shadow-sm border"
                 >
-                  {/* Question details */}
                   <div className="text-left">
                     <p className="font-semibold text-gray-800 mb-2">
                       {question.questionTitle}
@@ -139,53 +129,13 @@ const QuestionHistoryPage = () => {
                         <span className="font-semibold">{question.status}</span>
                       </span>
                     </div>
-                    {/* Student attachments */}
-                    {question.questionAttachments &&
-                      question.questionAttachments.length > 0 && (
-                        <div className="mt-2">
-                          <p className="text-xs font-semibold text-gray-600">
-                            Your Attachments:
-                          </p>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {question.questionAttachments.map((att, index) => (
-                              <div
-                                key={index}
-                                className="relative border rounded-md p-1 hover:bg-gray-200"
-                              >
-                                {att.fileType &&
-                                att.fileType.startsWith("image/") ? (
-                                  <img
-                                    src={att.fileUrl}
-                                    alt={att.fileName}
-                                    className="w-16 h-16 object-contain rounded-md cursor-pointer"
-                                    onClick={() =>
-                                      handleEnlargeImage(att.fileUrl)
-                                    }
-                                  />
-                                ) : (
-                                  <a
-                                    href={att.fileUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="w-16 h-16 flex flex-col items-center justify-center bg-gray-100 rounded-md p-1"
-                                  >
-                                    <span className="text-2xl">📄</span>
-                                    <span
-                                      className="block text-xs text-gray-500 truncate w-full"
-                                      title={att.fileName}
-                                    >
-                                      File
-                                    </span>
-                                  </a>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+
+                    {/* এখানে প্রশ্ন অ্যাটাচমেন্টের জন্য নতুন কম্পোনেন্ট ব্যবহার করা হয়েছে */}
+                    <AttachmentDisplay
+                      attachments={question.questionAttachments}
+                    />
                   </div>
 
-                  {/* Solution details */}
                   {question.solutionText && (
                     <div className="mt-3 p-3 bg-green-50 rounded-md border border-green-200 text-left">
                       <p className="font-semibold text-green-800 mb-1">
@@ -195,52 +145,10 @@ const QuestionHistoryPage = () => {
                         {question.solutionText}
                       </p>
 
-                      {/* Teacher attachments */}
-                      {question.solutionAttachments &&
-                        question.solutionAttachments.length > 0 && (
-                          <div className="mt-2">
-                            <p className="text-xs font-semibold text-gray-600">
-                              Solution Attachments:
-                            </p>
-                            <div className="flex flex-wrap gap-2 mt-1">
-                              {question.solutionAttachments.map(
-                                (att, index) => (
-                                  <div
-                                    key={index}
-                                    className="relative border rounded-md p-1 hover:bg-gray-200"
-                                  >
-                                    {att.fileType &&
-                                    att.fileType.startsWith("image/") ? (
-                                      <img
-                                        src={att.fileUrl}
-                                        alt={att.fileName}
-                                        className="w-16 h-16 object-contain rounded-md cursor-pointer"
-                                        onClick={() =>
-                                          handleEnlargeImage(att.fileUrl)
-                                        }
-                                      />
-                                    ) : (
-                                      <a
-                                        href={att.fileUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-16 h-16 flex flex-col items-center justify-center bg-gray-100 rounded-md p-1"
-                                      >
-                                        <span className="text-2xl">📄</span>
-                                        <span
-                                          className="block text-xs text-gray-500 truncate w-full"
-                                          title={att.fileName}
-                                        >
-                                          File
-                                        </span>
-                                      </a>
-                                    )}
-                                  </div>
-                                )
-                              )}
-                            </div>
-                          </div>
-                        )}
+                      {/* এখানে উত্তর অ্যাটাচমেন্টের জন্য নতুন কম্পোনেন্ট ব্যবহার করা হয়েছে */}
+                      <AttachmentDisplay
+                        attachments={question.solutionAttachments}
+                      />
 
                       {isSolved && (
                         <div className="flex space-x-2 mt-3 justify-end">
@@ -306,26 +214,6 @@ const QuestionHistoryPage = () => {
           onSuccess={handleFollowUpSuccess}
           onClose={() => setShowFollowUpForm(false)}
         />
-      )}
-
-      {enlargedImage && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
-          onClick={handleCloseEnlargedImage}
-        >
-          <img
-            src={enlargedImage}
-            alt="Enlarged"
-            className="max-w-[90vw] max-h-[90vh] cursor-pointer"
-            onClick={(e) => e.stopPropagation()}
-          />
-          <button
-            className="absolute top-4 right-4 text-white text-4xl hover:text-gray-300 cursor-pointer"
-            onClick={handleCloseEnlargedImage}
-          >
-            &times;
-          </button>
-        </div>
       )}
     </div>
   );
