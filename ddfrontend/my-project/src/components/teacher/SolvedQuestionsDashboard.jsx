@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import api from "../../services/api";
+import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
 
-const SolvedQuestionsDashboard = ({ loggedInUser }) => {
+const SolvedQuestionsDashboard = () => {
+  const { loggedInUser } = useContext(AuthContext); // useContext ব্যবহার করে loggedInUser নিন
   const [solvedQuestions, setSolvedQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // --- নতুন: মোডালের জন্য state ---
   const [viewingQuestionDetails, setViewingQuestionDetails] = useState(null);
   const [enlargedImage, setEnlargedImage] = useState(null);
 
@@ -30,10 +31,8 @@ const SolvedQuestionsDashboard = ({ loggedInUser }) => {
     fetchSolvedQuestions();
   }, [loggedInUser]);
 
-  // --- নতুন: মোডাল খোলার জন্য হ্যান্ডলার ---
   const handleViewDetailsClick = async (questionId) => {
     try {
-      // একটি নির্দিষ্ট প্রশ্নের সম্পূর্ণ ডেটা আনা হচ্ছে
       const response = await api.get(`/questions/${questionId}`);
       setViewingQuestionDetails(response.data);
     } catch (err) {
@@ -96,7 +95,6 @@ const SolvedQuestionsDashboard = ({ loggedInUser }) => {
         )}
       </div>
 
-      {/* --- নতুন: বিস্তারিত দেখার জন্য মোডাল --- */}
       {viewingQuestionDetails && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-40">
           <div className="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full text-left space-y-4 max-h-[90vh] overflow-y-auto">
@@ -104,7 +102,6 @@ const SolvedQuestionsDashboard = ({ loggedInUser }) => {
               Question Details
             </h3>
 
-            {/* ছাত্রের প্রশ্ন */}
             <div>
               <p className="font-semibold text-gray-700">Student's Question:</p>
               <div className="p-3 bg-gray-50 rounded-md border mt-1">
@@ -158,7 +155,6 @@ const SolvedQuestionsDashboard = ({ loggedInUser }) => {
               </div>
             </div>
 
-            {/* শিক্ষকের উত্তর */}
             <div>
               <p className="font-semibold text-green-700">Your Solution:</p>
               <div className="p-3 bg-green-50 rounded-md border border-green-200 mt-1">
@@ -221,7 +217,6 @@ const SolvedQuestionsDashboard = ({ loggedInUser }) => {
         </div>
       )}
 
-      {/* ইমেজ বড় করে দেখানোর মোডাল */}
       {enlargedImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"

@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
-import api from "../../services/api"; // api import করা হয়েছে
+import React, { useState, useEffect, useContext } from "react";
+import api from "../../services/api";
+import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
 
-const TeacherProfilePage = ({ loggedInUser }) => {
+const TeacherProfilePage = () => {
+  const { loggedInUser } = useContext(AuthContext); // useContext ব্যবহার করে loggedInUser নিন
   const [teacherInfo, setTeacherInfo] = useState(null);
-  const [loading, setLoading] = useState(true); // লোডিং স্টেট যোগ করা হয়েছে
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (loggedInUser && loggedInUser.role === "teacher") {
       const fetchTeacherProfile = async () => {
         try {
           setLoading(true);
-          // API থেকে শিক্ষকের প্রোফাইল তথ্য আনা হচ্ছে
           const response = await api.get(
             `/teachers/profile?email=${loggedInUser.email}`
           );

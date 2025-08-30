@@ -1,17 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import api from "../../services/api";
+import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
 
-const SolutionForm = ({
-  question,
-  onCancel,
-  loggedInUser,
-  addNotification,
-  onSolutionSuccess,
-}) => {
+const SolutionForm = ({ question, onCancel, onSolutionSuccess }) => {
+  const { loggedInUser, addNotification } = useContext(AuthContext); // useContext ব্যবহার করে state এবং ফাংশনগুলো নিন
   const [solutionText, setSolutionText] = useState("");
   const [error, setError] = useState("");
 
-  // --- নতুন: ফাইল আপলোডের জন্য state ---
   const [attachments, setAttachments] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [enlargedImage, setEnlargedImage] = useState(null);
@@ -66,7 +61,7 @@ const SolutionForm = ({
       const payload = {
         solutionText: solutionText,
         teacherEmail: loggedInUser.email,
-        attachments: attachments, // <-- আপলোড করা ফাইলের তথ্য পাঠানো হচ্ছে
+        attachments: attachments,
       };
 
       await api.post(`/questions/${question.questionId}/solve`, payload);
@@ -128,7 +123,6 @@ const SolutionForm = ({
               />
             </div>
 
-            {/* --- নতুন: ফাইল আপলোড সেকশন --- */}
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Attach Files:
@@ -198,7 +192,6 @@ const SolutionForm = ({
         </div>
       </div>
 
-      {/* --- নতুন: ইমেজ বড় করে দেখানোর মোডাল --- */}
       {enlargedImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"

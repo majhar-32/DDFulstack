@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট
 
-const StudentsManagement = ({ setCurrentPage }) => {
+const StudentsManagement = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,7 +13,7 @@ const StudentsManagement = ({ setCurrentPage }) => {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/admin/students"); // নতুন API এন্ডপয়েন্ট
+      const response = await api.get("/admin/students");
       setStudents(response.data);
       setError(null);
     } catch (err) {
@@ -26,11 +26,9 @@ const StudentsManagement = ({ setCurrentPage }) => {
 
   const handleToggleStatus = async (userId, currentStatus) => {
     try {
-      // স্ট্যাটাস পরিবর্তনের জন্য PATCH রিকোয়েস্ট
       await api.patch(`/admin/students/${userId}/status`, {
         isActive: !currentStatus,
       });
-      // UI তে সাথে সাথে পরিবর্তন দেখানোর জন্য state আপডেট করা হচ্ছে
       setStudents(
         students.map((student) =>
           student.userId === userId
@@ -45,27 +43,14 @@ const StudentsManagement = ({ setCurrentPage }) => {
   };
 
   const handleDeleteStudent = (email) => {
-    // ডিলিট করার কার্যকারিতা আপাতত কমেন্ট আউট করে রাখা হলো, কারণ এটি জটিল হতে পারে
-    // (ছাত্রের সাথে সম্পর্কিত পেমেন্ট, প্রশ্ন ইত্যাদি ডিলিট করতে হবে)
     if (
       window.confirm(
         "Are you sure you want to delete this student? This action cannot be undone."
       )
     ) {
       alert("Delete functionality is not yet implemented in the backend.");
-      // try {
-      //   await api.delete(`/admin/students/by-email?email=${email}`);
-      //   fetchStudents(); // তালিকা রিফ্রেশ করা হচ্ছে
-      // } catch (err) {
-      //   alert("Failed to delete student.");
-      // }
     }
   };
-
-  // StudentResponseDTO-তে levelOfStudy যোগ করতে হবে
-  // StudentServiceImpl-এর mapToStudentResponseDTO মেথডে নিচের লাইনটি যোগ করুন:
-  // dto.setLevelOfStudy(student.getLevelOfStudy());
-  // StudentResponseDTO তেও ফিল্ডটি যোগ করুন: private String levelOfStudy;
 
   if (loading) return <p className="text-center p-8">Loading students...</p>;
   if (error) return <p className="text-center text-red-500 p-8">{error}</p>;

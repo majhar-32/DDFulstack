@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
 
-const StudentDashboard = ({ loggedInUser, setSelectedCourseForSubjects }) => {
+const StudentDashboard = () => {
+  const { loggedInUser, setSelectedCourseForSubjects } =
+    useContext(AuthContext); // useContext ব্যবহার করে state and setter function নিন
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

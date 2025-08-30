@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট
 
-const TeachersManagement = ({ setCurrentPage }) => {
+const TeachersManagement = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,7 +13,7 @@ const TeachersManagement = ({ setCurrentPage }) => {
   const fetchTeachers = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/admin/teachers"); // নতুন API এন্ডপয়েন্ট
+      const response = await api.get("/admin/teachers");
       setTeachers(response.data);
       setError(null);
     } catch (err) {
@@ -26,11 +26,9 @@ const TeachersManagement = ({ setCurrentPage }) => {
 
   const handleToggleStatus = async (userId, currentStatus) => {
     try {
-      // স্ট্যাটাস পরিবর্তনের জন্য PATCH রিকোয়েস্ট
       await api.patch(`/admin/teachers/${userId}/status`, {
         isActive: !currentStatus,
       });
-      // UI তে সাথে সাথে পরিবর্তন দেখানোর জন্য state আপডেট করা হচ্ছে
       setTeachers(
         teachers.map((teacher) =>
           teacher.userId === userId

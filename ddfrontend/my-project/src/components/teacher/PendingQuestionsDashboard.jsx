@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import SolutionForm from "./SolutionForm";
 import api from "../../services/api";
+import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
 
-const PendingQuestionsDashboard = ({ loggedInUser, addNotification }) => {
+const PendingQuestionsDashboard = () => {
+  const { loggedInUser, addNotification } = useContext(AuthContext); // useContext ব্যবহার করে state এবং ফাংশনগুলো নিন
   const [pendingQuestions, setPendingQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [solvingQuestion, setSolvingQuestion] = useState(null);
 
-  // --- নতুন স্টেট: ইমেজ বড় করে দেখার জন্য ---
   const [enlargedImage, setEnlargedImage] = useState(null);
 
   const fetchPendingQuestions = async () => {
@@ -48,7 +49,6 @@ const PendingQuestionsDashboard = ({ loggedInUser, addNotification }) => {
     setSolvingQuestion(null);
   };
 
-  // --- নতুন হ্যান্ডলার: ইমেজ বড় করার এবং বন্ধ করার জন্য ---
   const handleEnlargeImage = (imageUrl) => {
     setEnlargedImage(imageUrl);
   };
@@ -91,7 +91,6 @@ const PendingQuestionsDashboard = ({ loggedInUser, addNotification }) => {
                     </p>
                   )}
 
-                  {/* --- নতুন: অ্যাটাচমেন্ট প্রিভিউ সেকশন --- */}
                   {question.questionAttachments &&
                     question.questionAttachments.length > 0 && (
                       <div className="mt-2">
@@ -152,13 +151,10 @@ const PendingQuestionsDashboard = ({ loggedInUser, addNotification }) => {
         <SolutionForm
           question={solvingQuestion}
           onCancel={handleCancelSolve}
-          loggedInUser={loggedInUser}
-          addNotification={addNotification}
           onSolutionSuccess={handleSolutionSuccess}
         />
       )}
 
-      {/* --- নতুন: ইমেজ বড় করে দেখানোর মোডাল --- */}
       {enlargedImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"

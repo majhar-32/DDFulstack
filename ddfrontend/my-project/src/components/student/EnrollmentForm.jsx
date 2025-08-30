@@ -1,16 +1,21 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // 1. useNavigate ইম্পোর্ট করুন
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
 
-// 2. onEnrollSuccess prop টি গ্রহণ করুন এবং setCurrentPage সরিয়ে দিন
-const EnrollmentForm = ({ courseName, loggedInUser, onEnrollSuccess }) => {
+const EnrollmentForm = () => {
+  const {
+    loggedInUser,
+    courseToEnroll: courseName,
+    handleEnrollSuccess,
+  } = useContext(AuthContext); // useContext ব্যবহার করে state এবং ফাংশনগুলো নিন
   const [formData, setFormData] = useState({
     paymentMethod: "",
     transactionId: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const navigate = useNavigate(); // 3. useNavigate হুক ব্যবহার করুন
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,13 +51,11 @@ const EnrollmentForm = ({ courseName, loggedInUser, onEnrollSuccess }) => {
 
         setIsSubmitted(true);
 
-        // 4. সফলভাবে কোর্স কেনার পর onEnrollSuccess ফাংশনটি কল করুন
-        if (onEnrollSuccess) {
-          onEnrollSuccess(courseName);
+        if (handleEnrollSuccess) {
+          handleEnrollSuccess(courseName);
         }
 
         setTimeout(() => {
-          // 5. setCurrentPage এর পরিবর্তে navigate ব্যবহার করুন
           navigate("/student/dashboard");
         }, 0);
       } catch (error) {

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom"; // 1. useNavigate এবং useLocation ইম্পোর্ট করা হয়েছে
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../../services/api";
+import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
 
 const courseSubjectsData = {
   "Engineering + Biology Admission Program 2025": [
@@ -27,15 +28,13 @@ const courseSubjectsData = {
 };
 
 const AskDoubtForm = ({
-  // setCurrentPage prop টি আর প্রয়োজন নেই
-  loggedInUser,
-  addNotification,
   isFollowUp = false,
   originalQuestion = null,
   onSuccess,
   onClose,
 }) => {
-  const navigate = useNavigate(); // 2. useNavigate হুক ব্যবহার করা হয়েছে
+  const { loggedInUser, addNotification } = useContext(AuthContext); // useContext ব্যবহার করে state and setter function নিন
+  const navigate = useNavigate();
   const location = useLocation();
   const preselectedCourseName = location.state?.courseName;
 
@@ -152,9 +151,8 @@ const AskDoubtForm = ({
         await api.post("/questions", payload);
         setIsPosted(true);
         setTimeout(() => {
-          // 3. setCurrentPage এর পরিবর্তে navigate ব্যবহার করা হয়েছে
           navigate("/student/dashboard");
-        },0);
+        }, 0);
       }
     } catch (err) {
       setError("Failed to post your doubt. Please try again.");

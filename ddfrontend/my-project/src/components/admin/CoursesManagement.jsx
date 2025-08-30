@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট
+import { useNavigate } from "react-router-dom"; // useNavigate ইম্পোর্ট করুন
+import api from "../../services/api";
 
-const CoursesManagement = ({ setCurrentPage }) => {
+const CoursesManagement = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // useNavigate হুক ব্যবহার করুন
 
   useEffect(() => {
     fetchCourses();
@@ -13,7 +15,7 @@ const CoursesManagement = ({ setCurrentPage }) => {
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/courses"); // API থেকে কোর্স আনা হচ্ছে
+      const response = await api.get("/courses");
       setCourses(response.data);
       setError(null);
     } catch (err) {
@@ -29,8 +31,7 @@ const CoursesManagement = ({ setCurrentPage }) => {
       window.confirm("Are you sure you want to delete this course permanently?")
     ) {
       try {
-        await api.delete(`/courses/${courseId}`); // API তে ডিলিট রিকোয়েস্ট
-        // UI থেকে কোর্সটি সাথে সাথে মুছে ফেলা হচ্ছে
+        await api.delete(`/courses/${courseId}`);
         setCourses(courses.filter((course) => course.courseId !== courseId));
       } catch (err) {
         alert("Failed to delete the course. Please try again.");
@@ -50,7 +51,7 @@ const CoursesManagement = ({ setCurrentPage }) => {
         </h2>
         <div className="flex justify-end mb-6">
           <button
-            onClick={() => setCurrentPage("add-course-form")}
+            onClick={() => navigate("/admin/add-course")} // navigate ব্যবহার করুন
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
           >
             Add New Course

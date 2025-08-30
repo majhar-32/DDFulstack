@@ -1,14 +1,16 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
 
-const Navbar = ({
-  loggedInUser,
-  setLoggedInUser,
-  notifications,
-  markNotificationAsRead,
-  clearNotifications,
-  setHighlightQuestionId,
-}) => {
+const Navbar = () => {
+  const {
+    loggedInUser,
+    setLoggedInUser,
+    notifications,
+    markNotificationAsRead,
+    clearNotifications,
+    setHighlightQuestionId,
+  } = useContext(AuthContext); // useContext ব্যবহার করে state গুলো নিন
   const [isOpen, setIsOpen] = useState(false);
   const [isJoinOpen, setIsJoinOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);

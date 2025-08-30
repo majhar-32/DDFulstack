@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
 
-const CourseDetailsPage = ({ courseName }) => {
+const CourseDetailsPage = () => {
+  const { selectedCourseForSubjects: courseName } = useContext(AuthContext); // useContext ব্যবহার করে courseName নিন
   const navigate = useNavigate();
 
   const handleAskDoubtClick = () => {

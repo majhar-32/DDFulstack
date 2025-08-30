@@ -1,32 +1,41 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import CourseCard from "./CourseCard";
+import { AuthContext } from "../../context/AuthContext";
 
-const HomePage = ({
-  courses,
-  handleEnrollClick,
-  enrolledCourses,
-  loadingCourses,
-  coursesSectionRef,
-}) => {
+const HomePage = () => {
+  const {
+    courses,
+    handleEnrollClick,
+    enrolledCourses,
+    loadingCourses,
+    loggedInUser,
+  } = useContext(AuthContext);
+
+  const coursesSectionRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // --- এই অংশটি পরিবর্তন করা হয়েছে ---
-    // Dashboard থেকে আসা state চেক করবে
     if (location.state?.scrollToCourses && coursesSectionRef.current) {
       coursesSectionRef.current.scrollIntoView({ behavior: "auto" });
       navigate(location.pathname, { replace: true, state: {} });
-    }
-    // Navbar থেকে আসা hash চেক করবে
-    else if (
+    } else if (
       location.hash === "#courses-section" &&
       coursesSectionRef.current
     ) {
       coursesSectionRef.current.scrollIntoView({ behavior: "auto" });
     }
   }, [location, coursesSectionRef, navigate]);
+
+  const onEnrollButtonClick = (courseName) => {
+    handleEnrollClick(courseName);
+    if (!loggedInUser || loggedInUser.role !== "student") {
+      navigate("/login/student", { state: { fromEnrollment: true } });
+    } else {
+      navigate("/student/enroll");
+    }
+  };
 
   return (
     <main className="p-8 text-center flex-grow">
@@ -74,7 +83,7 @@ const HomePage = ({
                 ]}
                 priceText={`${course.price} BDT`}
                 enrollButtonText="Enroll Now"
-                onEnrollClick={handleEnrollClick}
+                onEnrollClick={onEnrollButtonClick}
                 isEnrolled={enrolledCourses.has(course.title)}
               />
             ))}

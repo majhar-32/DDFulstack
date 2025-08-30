@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from "react";
-import api from "../../services/api"; // api import করা হয়েছে
+import React, { useState, useEffect, useContext } from "react";
+import api from "../../services/api";
+import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
 
-const StudentProfilePage = ({ loggedInUser }) => {
+const StudentProfilePage = () => {
+  const { loggedInUser } = useContext(AuthContext); // useContext ব্যবহার করে loggedInUser নিন
   const [studentInfo, setStudentInfo] = useState(null);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
-  const [loading, setLoading] = useState(true); // লোডিং স্টেট যোগ করা হয়েছে
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (loggedInUser && loggedInUser.role === "student") {
       const fetchStudentProfile = async () => {
         try {
           setLoading(true);
-          // API থেকে ছাত্রের প্রোফাইল তথ্য আনা হচ্ছে
           const profileResponse = await api.get(
             `/students/profile?email=${loggedInUser.email}`
           );
           setStudentInfo(profileResponse.data);
 
-          // API থেকে এনরোল করা কোর্সের তালিকা আনা হচ্ছে
           const coursesResponse = await api.get(
             `/students/courses?email=${loggedInUser.email}`
           );

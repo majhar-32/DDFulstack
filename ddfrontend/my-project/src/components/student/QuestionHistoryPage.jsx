@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom"; // 1. useNavigate এবং useLocation ইম্পোর্ট করুন
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../../services/api";
 import AskDoubtForm from "./AskDoubtForm";
+import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
 
-const QuestionHistoryPage = ({
-  // setCurrentPage prop টি আর প্রয়োজন নেই
-  loggedInUser,
-  addNotification,
-}) => {
-  const navigate = useNavigate(); // 2. useNavigate হুক ব্যবহার করুন
+const QuestionHistoryPage = () => {
+  const { loggedInUser, addNotification } = useContext(AuthContext); // useContext ব্যবহার করে state and setter function নিন
+  const navigate = useNavigate();
   const location = useLocation();
 
-  // CourseDetailsPage থেকে পাঠানো কোর্স এর নাম state থেকে নেওয়া হচ্ছে
   const filterByCourseName = location.state?.courseName;
 
   const [questions, setQuestions] = useState([]);
@@ -253,7 +250,6 @@ const QuestionHistoryPage = ({
         )}
 
         <div className="flex justify-center mt-8">
-          {/* 3. onClick এ navigate ফাংশন ব্যবহার করা হয়েছে */}
           <button
             onClick={() => navigate("/student/dashboard")}
             className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg"
@@ -267,8 +263,6 @@ const QuestionHistoryPage = ({
         <AskDoubtForm
           isFollowUp={true}
           originalQuestion={selectedOriginalQuestion}
-          loggedInUser={loggedInUser}
-          addNotification={addNotification}
           onSuccess={handleFollowUpSuccess}
           onClose={() => setShowFollowUpForm(false)}
         />

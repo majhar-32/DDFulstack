@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট
 
-const QuestionsAnswersManagement = ({ setCurrentPage }) => {
+const QuestionsAnswersManagement = () => {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -134,7 +134,6 @@ const QuestionsAnswersManagement = ({ setCurrentPage }) => {
                 <p className="font-semibold">Question:</p>
                 <p>{viewingQuestion.description}</p>
               </div>
-              {/* Solution display can be added here if available in the DTO */}
             </div>
             <div className="text-right mt-6">
               <button

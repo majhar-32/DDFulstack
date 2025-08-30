@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../services/api"; // API সার্ভিস ইম্পোর্ট
 
-const MoneyFlowManagement = ({ setCurrentPage }) => {
+const MoneyFlowManagement = () => {
   const [enrollments, setEnrollments] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,6 @@ const MoneyFlowManagement = ({ setCurrentPage }) => {
         const data = response.data;
         setEnrollments(data);
 
-        // API থেকে পাওয়া ডেটা দিয়ে মোট রাজস্ব গণনা
         const revenue = data.reduce((sum, enrollment) => {
           return sum + (enrollment.amount || 0);
         }, 0);

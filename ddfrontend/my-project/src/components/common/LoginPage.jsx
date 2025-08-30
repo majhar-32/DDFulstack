@@ -1,14 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import api from "../../services/api";
+import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
 
-const LoginPage = ({
-  title,
-  role,
-  formColor,
-  setLoggedInUser,
-  registerLink,
-}) => {
+const LoginPage = ({ title, role, formColor, registerLink }) => {
+  const { setLoggedInUser } = useContext(AuthContext); // useContext ব্যবহার করে setLoggedInUser নিন
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -29,6 +25,7 @@ const LoginPage = ({
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
       setError("Email is invalid.");
+      return;
       return;
     }
 
