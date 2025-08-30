@@ -55,10 +55,11 @@ const AskDoubtForm = ({
   const [isUploading, setIsUploading] = useState(false);
 
   const [isRecording, setIsRecording] = useState(false);
-  const [audioChunks, setAudioChunks] = useState([]);
   const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
 
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [isCapturingVideo, setIsCapturingVideo] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const currentStreamRef = useRef(null);
@@ -142,22 +143,25 @@ const AskDoubtForm = ({
           audio: true,
         });
         mediaRecorderRef.current = new MediaRecorder(stream);
+        audioChunksRef.current = [];
+
         mediaRecorderRef.current.ondataavailable = (e) => {
-          setAudioChunks((prev) => [...prev, e.data]);
+          audioChunksRef.current.push(e.data);
         };
+
         mediaRecorderRef.current.onstop = () => {
-          if (audioChunks.length > 0) {
-            const audioBlob = new Blob(audioChunks, { type: "audio/mp3" });
-            const audioFile = new File(
-              [audioBlob],
-              `voice-note-${Date.now()}.mp3`,
-              { type: "audio/mp3" }
-            );
-            handleFileUpload([audioFile]);
-            setAudioChunks([]);
-          }
+          const audioBlob = new Blob(audioChunksRef.current, {
+            type: "audio/mp3",
+          });
+          const audioFile = new File(
+            [audioBlob],
+            `voice-note-${Date.now()}.mp3`,
+            { type: "audio/mp3" }
+          );
+          handleFileUpload([audioFile]);
           stream.getTracks().forEach((track) => track.stop());
         };
+
         mediaRecorderRef.current.start();
         setIsRecording(true);
       } catch (err) {
@@ -167,7 +171,7 @@ const AskDoubtForm = ({
     }
   };
 
-  const handleStopRecording = () => {
+  const handleStopAndAttachRecording = () => {
     if (
       mediaRecorderRef.current &&
       mediaRecorderRef.current.state === "recording"
@@ -177,12 +181,26 @@ const AskDoubtForm = ({
     }
   };
 
-  // Camera Functions with added checks
+  const handleCancelRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      mediaRecorderRef.current.stream
+        .getTracks()
+        .forEach((track) => track.stop());
+    }
+  };
+
+  // Camera Functions
   const handleCameraOpen = async () => {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
+          audio: true, // For video recording
         });
         currentStreamRef.current = stream;
         if (videoRef.current) {
@@ -218,12 +236,59 @@ const AskDoubtForm = ({
     }
   };
 
+  const handleStartVideoRecording = async () => {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+        currentStreamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
+        let localVideoChunks = [];
+        mediaRecorder.ondataavailable = (e) => {
+          localVideoChunks.push(e.data);
+        };
+        mediaRecorder.onstop = () => {
+          const videoBlob = new Blob(localVideoChunks, { type: "video/mp4" });
+          const videoFile = new File([videoBlob], `video-${Date.now()}.mp4`, {
+            type: "video/mp4",
+          });
+          handleFileUpload([videoFile]);
+          localVideoChunks = [];
+        };
+        mediaRecorder.start();
+        setIsCapturingVideo(true);
+        setIsCameraOpen(true);
+      } catch (err) {
+        console.error("Video recording not allowed", err);
+        setError("Camera/Microphone access denied or not available.");
+      }
+    }
+  };
+
+  const handleStopVideoRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
+      mediaRecorderRef.current.stop();
+      setIsCapturingVideo(false);
+      handleCameraClose();
+    }
+  };
+
   const handleCameraClose = () => {
     if (currentStreamRef.current) {
       currentStreamRef.current.getTracks().forEach((track) => track.stop());
       currentStreamRef.current = null;
     }
     setIsCameraOpen(false);
+    setIsCapturingVideo(false);
   };
 
   const handlePostDoubt = async (e) => {
@@ -454,10 +519,17 @@ const AskDoubtForm = ({
                   </span>
                   <button
                     type="button"
-                    onClick={handleStopRecording}
-                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-lg text-sm"
+                    onClick={handleStopAndAttachRecording}
+                    className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-lg text-sm"
                   >
                     Stop & Attach
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancelRecording}
+                    className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg text-sm"
+                  >
+                    Cancel
                   </button>
                 </div>
               )}
@@ -531,6 +603,23 @@ const AskDoubtForm = ({
               >
                 Capture Image
               </button>
+              {!isCapturingVideo ? (
+                <button
+                  type="button"
+                  onClick={handleStartVideoRecording}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg"
+                >
+                  Start Recording
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleStopVideoRecording}
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-5 rounded-lg"
+                >
+                  Stop Recording
+                </button>
+              )}
               <button
                 type="button"
                 onClick={handleCameraClose}
