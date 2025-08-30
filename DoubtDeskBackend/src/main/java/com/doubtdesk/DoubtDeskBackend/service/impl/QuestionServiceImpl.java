@@ -88,7 +88,6 @@ public class QuestionServiceImpl implements QuestionService {
         return new PageImpl<>(dtos, pageable, totalQuestions);
     }
 
-    // --- মূল পরিবর্তন এখানে ---
     // এই মেথডটি এখন প্রশ্ন এবং উত্তর উভয়ের অ্যাটাচমেন্ট সঠিকভাবে যোগ করবে
     private QuestionResponseDTO mapToResponseDTO(Question question, Student student) {
         QuestionResponseDTO dto = new QuestionResponseDTO();
@@ -116,6 +115,7 @@ public class QuestionServiceImpl implements QuestionService {
         // উত্তরের সাথে থাকা অ্যাটাচমেন্ট যোগ করা হচ্ছে
         if (question.getAnswer() != null) {
             dto.setSolutionText(question.getAnswer().getAnswerText());
+            dto.setAnswerAt(question.getAnswer().getAnswerAt()); // <-- এই লাইনটি যোগ করুন
             if (question.getAnswer().getTeacher() != null && question.getAnswer().getTeacher().getUser() != null) {
                 dto.setSolvedByTeacherName(question.getAnswer().getTeacher().getUser().getEmail()); // এখানে ইমেইল ব্যবহার করা হলো
             }
@@ -159,11 +159,17 @@ public class QuestionServiceImpl implements QuestionService {
         return new PageImpl<>(dtos, pageable, questionsPage.getTotalElements());
     }
 
+    // এই মেথডটি আপডেট করা হচ্ছে
     @Override
     public List<QuestionResponseDTO> getSolvedQuestionsByTeacher(String email) {
         List<Question> questions = questionRepository.findSolvedQuestionsByTeacherEmail(email);
-        return questions.stream().map(q -> mapToResponseDTO(q, q.getAskingStudents().stream().findFirst().orElse(null))).collect(Collectors.toList());
+        // সমাধানের সময় (answerAt) এর উপর ভিত্তি করে প্রশ্নগুলোকে ডিসেন্ডিং অর্ডারে সাজানো হয়েছে
+        return questions.stream()
+                .sorted((q1, q2) -> q2.getAnswer().getAnswerAt().compareTo(q1.getAnswer().getAnswerAt()))
+                .map(q -> mapToResponseDTO(q, q.getAskingStudents().stream().findFirst().orElse(null)))
+                .collect(Collectors.toList());
     }
+
     @Override
     public void solveQuestion(Long questionId, SolutionRequestDTO solutionDTO) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new RuntimeException("Question not found"));

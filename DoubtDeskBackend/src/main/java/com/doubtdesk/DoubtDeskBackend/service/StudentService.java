@@ -11,4 +11,7 @@ public interface StudentService {
     StudentResponseDTO createStudent(StudentRequestDTO studentRequestDTO);
     List<CourseResponseDTO> getEnrolledCourses(String userEmail);
 
+    // নতুন মেথড যোগ করা হয়েছে
+    StudentResponseDTO getProfile(String userEmail);
+
 }

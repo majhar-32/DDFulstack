@@ -11,6 +11,7 @@ public class QuestionResponseDTO {
     private String description;
     private String status;
     private LocalDateTime postAt;
+    private LocalDateTime answerAt; // <-- এই লাইনটি যোগ করুন
     private String subjectName;
     private String studentName;
     private String studentEmail;

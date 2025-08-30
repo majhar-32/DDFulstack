@@ -24,13 +24,13 @@ const PendingQuestionsDashboard = () => {
     }
     try {
       setLoading(true);
-      // পেজ এবং সাইজ প্যারামিটার API কলে যুক্ত করা হলো
+      // এখানে `&sort=postAt,desc` যোগ করা হয়েছে
       const response = await api.get(
-        `/questions/pending?email=${loggedInUser.email}&page=${currentPage}&size=${pageSize}`
+        `/questions/pending?email=${loggedInUser.email}&page=${currentPage}&size=${pageSize}&sort=postAt,desc`
       );
 
-      setPendingQuestions(response.data.content); // `content` থেকে প্রশ্নগুলো নিন
-      setTotalPages(response.data.totalPages); // মোট পেজের সংখ্যা সেট করুন
+      setPendingQuestions(response.data.content);
+      setTotalPages(response.data.totalPages);
       setError(null);
     } catch (err) {
       setError("Failed to load pending questions.");
@@ -39,7 +39,6 @@ const PendingQuestionsDashboard = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchPendingQuestions();
   }, [loggedInUser, currentPage]); // currentPage পরিবর্তন হলে নতুন করে প্রশ্ন লোড হবে

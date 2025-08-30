@@ -9,5 +9,6 @@ public class StudentResponseDTO {
     private String name;
     private String email;
     private String institute;
+    private String levelOfStudy; // Add this new field
     private String registrationDate;
 }

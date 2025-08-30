@@ -31,7 +31,8 @@ const QuestionHistoryPage = () => {
     }
     try {
       setLoading(true);
-      let url = `/questions/by-student?email=${loggedInUser.email}&page=${currentPage}&size=${pageSize}`;
+      // এখানে `&sort=postAt,desc` যোগ করা হয়েছে
+      let url = `/questions/by-student?email=${loggedInUser.email}&page=${currentPage}&size=${pageSize}&sort=postAt,desc`;
       if (filterByCourseName) {
         url += `&courseName=${encodeURIComponent(filterByCourseName)}`;
       }

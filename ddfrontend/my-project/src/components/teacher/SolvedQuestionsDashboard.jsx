@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import api from "../../services/api";
-import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
+import { AuthContext } from "../../context/AuthContext";
 
 const SolvedQuestionsDashboard = () => {
-  const { loggedInUser } = useContext(AuthContext); // useContext ব্যবহার করে loggedInUser নিন
+  const { loggedInUser } = useContext(AuthContext);
   const [solvedQuestions, setSolvedQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,7 +19,11 @@ const SolvedQuestionsDashboard = () => {
         const response = await api.get(
           `/questions/solved-by-teacher?email=${loggedInUser.email}`
         );
-        setSolvedQuestions(response.data);
+        // এখানে উত্তর দেওয়ার সময় (answerAt) অনুসারে প্রশ্নগুলোকে সাজানো হয়েছে
+        const sortedQuestions = response.data.sort(
+          (a, b) => new Date(b.answerAt) - new Date(a.answerAt)
+        );
+        setSolvedQuestions(sortedQuestions);
         setError(null);
       } catch (err) {
         setError("Failed to load solved questions.");
@@ -69,6 +73,7 @@ const SolvedQuestionsDashboard = () => {
           </p>
         ) : (
           <div className="space-y-4 max-h-96 overflow-y-auto pr-4">
+            {/* ... rest of the code remains the same ... */}
             {solvedQuestions.map((question) => (
               <div
                 key={question.questionId}

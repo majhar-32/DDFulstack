@@ -7,7 +7,7 @@ import com.doubtdesk.DoubtDeskBackend.service.AdminService; // AdminService ব�
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.doubtdesk.DoubtDeskBackend.dto.AdminResponseDTO;
 import java.util.List;
 import java.util.Map;
 
@@ -57,5 +57,16 @@ public class AdminController {
     @GetMapping("/moneyflow")
     public ResponseEntity<List<PaymentResponseDTO>> getMoneyFlow() {
         return ResponseEntity.ok(adminService.getMoneyFlowData());
+    }
+
+    // নতুন মেথড যোগ করা হয়েছে
+    @GetMapping("/profile")
+    public ResponseEntity<AdminResponseDTO> getAdminProfile(@RequestParam String email) {
+        try {
+            AdminResponseDTO adminProfile = adminService.getProfile(email);
+            return ResponseEntity.ok(adminProfile);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

@@ -13,4 +13,7 @@ public interface AdminService {
     List<AdminQuestionViewDTO> getAllQuestionsForAdmin();
     void deleteQuestion(Long questionId);
     List<PaymentResponseDTO> getMoneyFlowData();
+
+    // নতুন মেথড যোগ করা হয়েছে
+    AdminResponseDTO getProfile(String userEmail);
 }

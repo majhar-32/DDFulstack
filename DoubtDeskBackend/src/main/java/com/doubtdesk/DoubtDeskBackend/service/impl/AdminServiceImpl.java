@@ -184,4 +184,14 @@ public class AdminServiceImpl implements AdminService {
         dto.setPaymentDate(payment.getPaymentDate());
         return dto;
     }
+
+    // নতুন মেথড যোগ করা হয়েছে
+    @Override
+    public AdminResponseDTO getProfile(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
+        Admin admin = adminRepository.findByUser_UserId(user.getUserId())
+                .orElseThrow(() -> new RuntimeException("Admin profile not found for user: " + userEmail));
+        return mapToResponseDTO(admin);
+    }
 }

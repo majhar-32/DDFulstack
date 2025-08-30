@@ -70,6 +70,7 @@ public class StudentServiceImpl implements StudentService {
         responseDTO.setName(student.getUser().getName()); // user অবজেক্ট থেকে name নিতে হবে
         responseDTO.setEmail(student.getUser().getEmail()); // user অবজেক্ট থেকে email নিতে হবে
         responseDTO.setInstitute(student.getInstitute());
+        responseDTO.setLevelOfStudy(student.getLevelOfStudy());
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         responseDTO.setRegistrationDate(formatter.format(student.getRegistrationDate()));
@@ -100,6 +101,15 @@ public class StudentServiceImpl implements StudentService {
                     return dto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public StudentResponseDTO getProfile(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
+        Student student = studentRepository.findByUser_UserId(user.getUserId())
+                .orElseThrow(() -> new RuntimeException("Student profile not found for user: " + userEmail));
+        return mapToResponseDTO(student);
     }
 
 }

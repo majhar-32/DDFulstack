@@ -17,27 +17,32 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController // এই ক্লাসটিকে একটি REST কন্ট্রোলার হিসেবে চিহ্নিত করে
-@RequestMapping("/api/students") // এই কন্ট্রোলারের সব এন্ডপয়েন্টের ভিত্তি URL
+@RestController
+@RequestMapping("/api/students")
 public class StudentController {
 
     @Autowired
-    private StudentService studentService; // আমাদের তৈরি করা সার্ভিসকে ইনজেক্ট করা হচ্ছে
+    private StudentService studentService;
 
-    // একজন নতুন ছাত্র তৈরি করার জন্য API এন্ডপয়েন্ট
     @PostMapping
     public ResponseEntity<StudentResponseDTO> createStudent(@RequestBody StudentRequestDTO requestDTO) {
-        // সার্ভিস লেয়ারের createStudent মেথডকে কল করা হচ্ছে
         StudentResponseDTO createdStudent = studentService.createStudent(requestDTO);
-
-        // সফলভাবে তৈরি হওয়ার পর HTTP Status 201 (Created) সহ রেসপন্স পাঠানো হচ্ছে
         return new ResponseEntity<>(createdStudent, HttpStatus.CREATED);
-
-
     }
     @GetMapping("/courses")
     public ResponseEntity<List<CourseResponseDTO>> getMyCourses(@RequestParam String email) {
         List<CourseResponseDTO> courses = studentService.getEnrolledCourses(email);
         return ResponseEntity.ok(courses);
+    }
+
+    // নতুন মেথড যোগ করা হয়েছে
+    @GetMapping("/profile")
+    public ResponseEntity<StudentResponseDTO> getStudentProfile(@RequestParam String email) {
+        try {
+            StudentResponseDTO studentProfile = studentService.getProfile(email);
+            return ResponseEntity.ok(studentProfile);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
