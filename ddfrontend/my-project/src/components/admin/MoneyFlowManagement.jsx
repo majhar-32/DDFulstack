@@ -40,8 +40,8 @@ const MoneyFlowManagement = () => {
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-8">
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-4xl w-full text-center border border-red-200">
         <div className="mb-8 p-4 bg-red-50 rounded-lg shadow-sm">
-          <p className="text-lg font-semibold text-red-700">Total Revenue</p>
-          <p className="text-3xl font-bold text-red-800">{totalRevenue} BDT</p>
+          <p className="text-lg font-semibold text-blue-700">Total Revenue</p>
+          <p className="text-3xl font-bold text-blue-800">{totalRevenue} BDT</p>
         </div>
         {enrollments.length === 0 ? (
           <p className="text-lg text-gray-700">No transactions recorded yet.</p>

@@ -99,7 +99,7 @@ const StudentsManagement = () => {
                             : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {student.isActive ? "Active" : "Inactive"}
+                        {student.isActive ? "Inactive" : "Active"}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
@@ -113,7 +113,7 @@ const StudentsManagement = () => {
                             : "bg-green-500 hover:bg-green-600 text-white"
                         }`}
                       >
-                        {student.isActive ? "Deactivate" : "Activate"}
+                        {student.isActive ? "Activate" : "Deactivate"}
                       </button>
                       <button
                         onClick={() => handleDeleteStudent(student.email)}

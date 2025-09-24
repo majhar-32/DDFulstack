@@ -46,7 +46,7 @@ const CoursesManagement = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-8">
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-4xl w-full text-center">
-        <h2 className="text-4xl font-bold text-yellow-600 mb-8">
+        <h2 className="text-4xl font-bold text-blue-600 mb-8">
           Courses Management ({courses.length} Total Courses)
         </h2>
         <div className="flex justify-end mb-6">

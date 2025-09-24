@@ -48,7 +48,7 @@ const QuestionsAnswersManagement = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-8">
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-5xl w-full text-center">
-        <h2 className="text-4xl font-bold text-purple-600 mb-8">
+        <h2 className="text-4xl font-bold text-blue-600 mb-8">
           Question & Answer Management ({questions.length} Total)
         </h2>
 
