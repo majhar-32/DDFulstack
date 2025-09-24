@@ -17,6 +17,7 @@ const StudentProfilePage = () => {
             `/students/profile?email=${loggedInUser.email}`
           );
           setStudentInfo(profileResponse.data);
+
           const coursesResponse = await api.get(
             `/students/courses?email=${loggedInUser.email}`
           );

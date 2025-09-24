@@ -46,7 +46,7 @@ const TeacherProfilePage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-8">
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-xl w-full text-center border border-green-200">
-        <h2 className="text-4xl font-bold text-blue-600 mb-8">
+        <h2 className="text-4xl font-bold text-green-600 mb-8">
           Teacher Profile
         </h2>
         <div className="space-y-4 text-left">

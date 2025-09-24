@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
-import { FiMenu, FiX } from "react-icons/fi";
+
 const Navbar = () => {
   const {
     loggedInUser,
@@ -130,7 +130,7 @@ const Navbar = () => {
         <div className="flex-shrink-0 flex items-center">
           <Link
             to={loggedInUser ? getDashboardPage() : "/"}
-            className="flex items-center text-2xl font-bold text-indigo-600  p-2 "
+            className="flex items-center text-2xl font-bold text-indigo-600 rounded-md p-2 hover:bg-gray-100 transition-colors duration-200"
           >
             <img
               src="/logo.png"
@@ -226,9 +226,33 @@ const Navbar = () => {
             className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-indigo-600 hover:bg-gray-100 focus:outline-none"
           >
             {!isOpen ? (
-              <FiMenu size={24} color="#4B5563" />
+              <svg
+                className="h-6 w-6"
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
             ) : (
-              <FiX size={24} color="#4B5563" />
+              <svg
+                className="h-6 w-6"
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
             )}
           </button>
         </div>
@@ -265,7 +289,7 @@ const Navbar = () => {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="bg-red-500 text-white block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-red-600"
+                  className="bg-blue-500 text-white block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-blue-600"
                 >
                   Logout
                 </button>

@@ -27,7 +27,6 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    // --- ডুপ্লিকেট মেথডটি মুছে ফেলা হয়েছে এবং @Valid যোগ করা হয়েছে ---
     @PostMapping("/register/student")
     public ResponseEntity<StudentResponseDTO> registerStudent(@Valid @RequestBody StudentRequestDTO requestDTO) {
         StudentResponseDTO createdStudent = studentService.createStudent(requestDTO);
@@ -52,8 +51,37 @@ public class AuthController {
             LoginResponseDTO response = authService.loginUser(loginRequestDTO);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            // যদি ইউজার না পাওয়া যায় বা পাসওয়ার্ড ভুল হয়
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    // নতুন মেথডগুলো এখানে যোগ করুন
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> requestPasswordReset(@RequestBody PasswordResetRequestDTO requestDTO) {
+        try {
+            authService.requestPasswordReset(requestDTO);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<Void> verifyOtp(@RequestBody OtpVerificationRequestDTO requestDTO) {
+        if (authService.verifyOtp(requestDTO)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> updatePassword(@RequestBody PasswordUpdateDTO updateDTO) {
+        try {
+            authService.updatePassword(updateDTO);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }

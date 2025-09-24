@@ -1,7 +1,11 @@
 import React, { useState, useContext } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import api from "../../services/api";
-import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম্পোর্ট করুন
+import { AuthContext } from "../../context/AuthContext";
+// সঠিক পাথ ব্যবহার করে নতুন কম্পোনেন্টগুলো ইম্পোর্ট করা হয়েছে
+import ForgotPasswordForm from "../auth/ForgotPasswordForm";
+import OtpVerificationForm from "../auth/OtpVerificationForm";
+import NewPasswordForm from "../auth/NewPasswordForm";
 
 const LoginPage = ({ title, role, formColor, registerLink }) => {
   const { setLoggedInUser } = useContext(AuthContext);
@@ -9,7 +13,10 @@ const LoginPage = ({ title, role, formColor, registerLink }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // added
+  const [showPassword, setShowPassword] = useState(false);
+  const [isForgotPasswordFlow, setIsForgotPasswordFlow] = useState(false);
+  const [emailForReset, setEmailForReset] = useState("");
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -59,6 +66,13 @@ const LoginPage = ({ title, role, formColor, registerLink }) => {
     }
   };
 
+  const handleResetPasswordSuccess = () => {
+    setIsForgotPasswordFlow(false);
+    alert("Password has been reset successfully. You can now log in.");
+    setEmail("");
+    setPassword("");
+  };
+
   const formBgClass = `bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center border border-${formColor}-200`;
   const submitButtonClass = `w-full bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-md font-semibold`;
   const loginBgClass = `min-h-screen bg-${formColor}-100 flex items-center justify-center p-4`;
@@ -68,105 +82,131 @@ const LoginPage = ({ title, role, formColor, registerLink }) => {
       <div className={formBgClass}>
         <h2 className="text-4xl font-bold text-gray-800 mb-8">{title}</h2>
 
-        {isSubmitted && (
-          <div
-            className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6"
-            role="alert"
-          >
-            <strong className="font-bold">Success!</strong>
-            <span className="block sm:inline"> Logging in...</span>
-          </div>
-        )}
-
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setError("");
-              }}
-              className="shadow-sm appearance-none border rounded-md w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-500"
+        {isForgotPasswordFlow ? (
+          !emailForReset ? (
+            <ForgotPasswordForm onEmailSubmitted={setEmailForReset} />
+          ) : !isOtpVerified ? (
+            <OtpVerificationForm
+              email={emailForReset}
+              onOtpVerified={() => setIsOtpVerified(true)}
             />
-          </div>
-
-          <div>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setError("");
-                }}
-                className="shadow-sm appearance-none border rounded-md w-full py-3 px-4 pr-12 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 focus:outline-none"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                aria-pressed={showPassword}
+          ) : (
+            <NewPasswordForm
+              email={emailForReset}
+              onSuccess={handleResetPasswordSuccess}
+            />
+          )
+        ) : (
+          <>
+            {isSubmitted && (
+              <div
+                className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6"
+                role="alert"
               >
-                {showPassword ? (
-                  // Eye-off icon
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-8-10-8a18.4 18.4 0 0 1 5.06-6.94" />
-                    <path d="M1 1l22 22" />
-                    <path d="M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 2.12-5.12" />
-                    <path d="M14.12 14.12L9.88 9.88" />
-                  </svg>
-                ) : (
-                  // Eye icon
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M1 12s3-8 11-8 11 8 11 8-3 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                )}
-              </button>
-            </div>
-
-            {error && (
-              <p className="text-red-500 text-xs italic mt-1">{error}</p>
+                <strong className="font-bold">Success!</strong>
+                <span className="block sm:inline"> Logging in...</span>
+              </div>
             )}
-          </div>
 
-          <button type="submit" className={submitButtonClass}>
-            Login
-          </button>
-        </form>
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError("");
+                  }}
+                  className="shadow-sm appearance-none border rounded-md w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                />
+              </div>
 
-        {registerLink && (
-          <p className="mt-8 text-gray-700">
-            Don't have an account?{" "}
-            <Link
-              to={registerLink}
-              className="text-blue-600 font-semibold hover:underline"
-            >
-              Register now.
-            </Link>
-          </p>
+              <div>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setError("");
+                    }}
+                    className="shadow-sm appearance-none border rounded-md w-full py-3 px-4 pr-12 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword}
+                  >
+                    {showPassword ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-8-10-8a18.4 18.4 0 0 1 5.06-6.94" />
+                        <path d="M1 1l22 22" />
+                        <path d="M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 2.12-5.12" />
+                        <path d="M14.12 14.12L9.88 9.88" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M1 12s3-8 11-8 11 8 11 8-3 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+
+                {error && (
+                  <p className="text-red-500 text-xs italic mt-1">{error}</p>
+                )}
+              </div>
+
+              <div className="flex justify-between items-center text-sm">
+                <button
+                  type="button"
+                  onClick={() => setIsForgotPasswordFlow(true)}
+                  className="text-blue-600 hover:underline"
+                >
+                  Forgot Password?
+                </button>
+              </div>
+
+              <button type="submit" className={submitButtonClass}>
+                Login
+              </button>
+            </form>
+
+            {registerLink && (
+              <p className="mt-8 text-gray-700">
+                Don't have an account?{" "}
+                <Link
+                  to={registerLink}
+                  className="text-blue-600 font-semibold hover:underline"
+                >
+                  Register now.
+                </Link>
+              </p>
+            )}
+          </>
         )}
       </div>
     </div>

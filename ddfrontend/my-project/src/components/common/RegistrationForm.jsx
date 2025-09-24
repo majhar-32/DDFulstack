@@ -142,9 +142,18 @@ const RegistrationForm = ({
                     ))}
                   </select>
                 ) : (
+                  // ... অন্যান্য কোড ...
+
                   <div className="relative">
+                    {/* ইনপুট টাইপের লজিক ঠিক করা হয়েছে */}
                     <input
-                      type={isPassword && isVisible ? "text" : field.type}
+                      type={
+                        isPassword
+                          ? isVisible
+                            ? "text"
+                            : "password"
+                          : field.type
+                      }
                       name={field.name}
                       placeholder={field.placeholder}
                       value={formData[field.name]}
@@ -166,7 +175,6 @@ const RegistrationForm = ({
                           isVisible ? "Hide password" : "Show password"
                         }
                         aria-pressed={isVisible}
-                        tabIndex={0}
                       >
                         {isVisible ? (
                           // Eye-off icon
@@ -204,6 +212,8 @@ const RegistrationForm = ({
                       </button>
                     )}
                   </div>
+
+                  // ... অন্যান্য কোড ...
                 )}
                 {errors[field.name] && (
                   <p className="text-red-500 text-xs italic mt-1 text-left">

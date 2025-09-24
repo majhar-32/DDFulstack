@@ -1,7 +1,16 @@
+// File: majhar-32/ddfulstack/DDFulstack-1ecabd13a3204c7f675cae2434dfefed0789ff48/ddfrontend/my-project/src/components/common/AttachmentDisplay.jsx
+
 import React, { useState } from "react";
 
-const AttachmentDisplay = ({ attachments, onRemove }) => {
+const AttachmentDisplay = ({
+  attachments,
+  onRemove,
+  onCaptureImage,
+  onRecordAudio,
+}) => {
   const [enlargedImage, setEnlargedImage] = useState(null);
+  const [isRecording, setIsRecording] = useState(false); // New state for recording
+  const [showCamera, setShowCamera] = useState(false); // New state for camera view
 
   if (!attachments || attachments.length === 0) {
     return null;

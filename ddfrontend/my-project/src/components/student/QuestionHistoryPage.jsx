@@ -6,7 +6,7 @@ import { AuthContext } from "../../context/AuthContext";
 import AttachmentDisplay from "../common/AttachmentDisplay"; // নতুন কম্পোনেন্ট ইম্পোর্ট
 
 const QuestionHistoryPage = () => {
-  const { loggedInUser } = useContext(AuthContext);
+  const { loggedInUser, addNotification } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
 

@@ -5,7 +5,7 @@ import { AuthContext } from "../../context/AuthContext";
 import AttachmentDisplay from "../common/AttachmentDisplay"; // নতুন কম্পোনেন্ট ইম্পোর্ট
 
 const PendingQuestionsDashboard = () => {
-  const { loggedInUser } = useContext(AuthContext);
+  const { loggedInUser, addNotification } = useContext(AuthContext);
   const [pendingQuestions, setPendingQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -106,7 +106,7 @@ const PendingQuestionsDashboard = () => {
                 </div>
                 <button
                   onClick={() => handleSolveClick(question)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-md font-medium ml-0 md:ml-4 flex-shrink-0 self-center"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md font-medium ml-0 md:ml-4 flex-shrink-0 self-center"
                 >
                   Solve
                 </button>

@@ -5,7 +5,7 @@ import { AuthContext } from "../../context/AuthContext"; // AuthContext ইম�
 
 const StudentDashboard = () => {
   const { loggedInUser, setSelectedCourseForSubjects } =
-    useContext(AuthContext);
+    useContext(AuthContext); // useContext ব্যবহার করে state and setter function নিন
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

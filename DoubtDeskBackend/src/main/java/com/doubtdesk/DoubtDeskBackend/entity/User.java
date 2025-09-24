@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "users")
-// @Inheritance(strategy = InheritanceType.JOINED) <-- এই লাইনটি মুছে ফেলা হয়েছে
+// @Inheritance(strategy = InheritanceType.JOINED) <-- আগের মতো রাখিনি
 public class User {
 
     @Id
@@ -34,4 +35,11 @@ public class User {
 
     @Column(name = "is_active", columnDefinition = "boolean default true")
     private boolean isActive = true;
+
+    // 🔹 Forgot Password extra fields
+    @Column(name = "reset_otp")
+    private String resetOtp;
+
+    @Column(name = "otp_expiry")
+    private LocalDateTime otpExpiry;
 }

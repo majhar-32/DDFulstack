@@ -27,13 +27,13 @@ const CourseDetailsPage = () => {
         <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
           <button
             onClick={handleAskDoubtClick}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
           >
             Ask a Doubt for this Course
           </button>
           <button
             onClick={handleViewQuestionsClick}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
           >
             View Questions for this Course
           </button>

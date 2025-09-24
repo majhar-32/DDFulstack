@@ -5,6 +5,17 @@ import Footer from "./components/common/Footer";
 import { AuthContext } from "./context/AuthContext";
 
 const App = () => {
+  const {
+    loggedInUser,
+    courses,
+    loadingCourses,
+    enrolledCourses,
+    handleEnrollClick,
+  } = useContext(AuthContext);
+  const coursesSectionRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
     <div className="min-h-screen bg-gray-100 font-inter flex flex-col">
       <Navbar />
