@@ -1,0 +1,58 @@
+services:
+  # --- 1. Frontend Service (React/Vite) ---
+  frontend:
+    container_name: doubtdesk_frontend
+    build:
+      context: ./ddfrontend/my-project # ফ্রন্টএন্ড ফোল্ডারের পাথ
+      dockerfile: Dockerfile
+    ports:
+      - "80:80" # হোস্টের 80 পোর্টে ম্যাপ করা হচ্ছে
+    environment:
+      # React অ্যাপে API URL সেট করার জন্য পরিবেশ পরিবর্তনশীল (ভবিষ্যতের জন্য)
+      - VITE_API_URL=http://localhost:8080/api/ # অথবা ডিপ্লয়মেন্ট সার্ভারের URL
+
+  # --- 2. Backend Service (Spring Boot) ---
+  app:
+    container_name: doubtdesk_backend
+    build:
+      context: ./DoubtDeskBackend # ব্যাকএন্ড ফোল্ডারের পাথ
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      # ডকার নেটওয়ার্কের মাধ্যমে MySQL-এ সংযোগ
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/doubtdesk_db
+      - SPRING_DATASOURCE_USERNAME=doubtdesk_user
+      - SPRING_DATASOURCE_PASSWORD=mi31122004@#
+      - file.upload-dir=/app/uploads
+      - spring.mail.username=majhar322004@gmail.com # application.properties থেকে ENV-তে
+      - spring.mail.password=asgjalnzhzyjosab # application.properties থেকে ENV-তে
+      # ⚠️ এই পাসওয়ার্ডটি (asgjalnzhzyjosab) প্রোডাকশনের জন্য সিক্রেট ম্যানেজার বা .env ফাইলে রাখতে হবে।
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - backend-uploads:/app/uploads # ফাইল আপলোডের জন্য পার্সিস্টেন্ট ভলিউম
+
+  # --- 3. Database Service (MySQL) ---
+  mysql:
+    container_name: doubtdesk_mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: mi31122004@#
+      MYSQL_DATABASE: doubtdesk_db
+      MYSQL_USER: doubtdesk_user
+      MYSQL_PASSWORD: mi31122004@#
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql-data:
+  backend-uploads:
