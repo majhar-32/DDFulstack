@@ -13,7 +13,7 @@ public class EmailService {
 
     public void sendSimpleEmail(String toEmail, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("your_email@gmail.com"); // আপনার কনফিগার করা ইমেল
+        message.setFrom("majhar322004@gmail.com");
         message.setTo(toEmail);
         message.setSubject(subject);
         message.setText(body);

@@ -11,5 +11,5 @@ public class QuestionRequestDTO {
     private String subjectName;
     private String questionTitle;
     private String description;
-    private List<AttachmentDTO> attachments; // <-- নতুন: অ্যাটাচমেন্টের তালিকা
+    private List<AttachmentDTO> attachments;
 }

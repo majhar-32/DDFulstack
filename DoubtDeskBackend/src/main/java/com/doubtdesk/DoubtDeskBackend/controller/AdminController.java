@@ -17,7 +17,6 @@ import com.doubtdesk.DoubtDeskBackend.dto.TeacherResponseDTO; // ইম্পো
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
-
     @Autowired
     private AdminService adminService;
 

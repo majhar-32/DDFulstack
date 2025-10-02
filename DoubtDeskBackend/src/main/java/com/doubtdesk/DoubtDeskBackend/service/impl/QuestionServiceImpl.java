@@ -75,7 +75,7 @@ public class QuestionServiceImpl implements QuestionService {
         allPendingQuestions.addAll(pending.getContent());
         allPendingQuestions.addAll(followUps.getContent());
 
-        // ডুপ্লিকেট প্রশ্ন বাদ দেওয়া
+        // ডুপ্লিকেট প্রশ্ন বাদ দেওয়া, *** bad dewa jabe na, ekta list a rakhte hobe then jara jara ei question koreche shober kache same solutionjabe
         List<Question> distinctQuestions = allPendingQuestions.stream().distinct().collect(Collectors.toList());
 
         // মোট প্রশ্নের সংখ্যা গণনা
@@ -159,7 +159,7 @@ public class QuestionServiceImpl implements QuestionService {
         return new PageImpl<>(dtos, pageable, questionsPage.getTotalElements());
     }
 
-    // এই মেথডটি আপডেট করা হচ্ছে
+    // এই মেথডটি আপডেট করা হচ্ছে, ekhaneo pagination implement korte hobe
     @Override
     public List<QuestionResponseDTO> getSolvedQuestionsByTeacher(String email) {
         List<Question> questions = questionRepository.findSolvedQuestionsByTeacherEmail(email);
