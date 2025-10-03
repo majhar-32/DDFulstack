@@ -15,7 +15,7 @@ FROM eclipse-temurin:21-jre-alpine
 EXPOSE 8080
 
 # ফাইল আপলোডের জন্য ভলিউম পথ নির্ধারণ (docker-compose-এর সাথে সামঞ্জস্যপূর্ণ)
-VOLUME /app/uploads
+# VOLUME /app/uploads
 
 # Build স্টেজ থেকে তৈরি হওয়া JAR ফাইলটি কপি করা
 ARG JAR_FILE=/app/target/ddbackend-demo.jar
