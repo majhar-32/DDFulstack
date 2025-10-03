@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment files ###
+.env
+
+### Docker volumes/data ###
+mysql-data/
+backend-uploads/
+
+### macOS system files ###
+.DS_Store

@@ -1,54 +1,48 @@
+version: "3.8"
+
 services:
-  # --- 1. Frontend Service (React/Vite) ---
+  # --- Frontend (React/Vite) ---
   frontend:
-    container_name: doubtdesk_frontend
     build:
-      context: ./ddfrontend/my-project # ফ্রন্টএন্ড ফোল্ডারের পাথ
+      context: ./ddfrontend/my-project
       dockerfile: Dockerfile
     ports:
-      - "80:80" # হোস্টের 80 পোর্টে ম্যাপ করা হচ্ছে
+      - "80:80"
     environment:
-      # React অ্যাপে API URL সেট করার জন্য পরিবেশ পরিবর্তনশীল (ভবিষ্যতের জন্য)
-      - VITE_API_URL=http://localhost:8080/api/ # অথবা ডিপ্লয়মেন্ট সার্ভারের URL
+      - VITE_API_URL=${BACKEND_URL}/api/
 
-  # --- 2. Backend Service (Spring Boot) ---
+  # --- Backend (Spring Boot) ---
   app:
-    container_name: doubtdesk_backend
     build:
-      context: ./DoubtDeskBackend # ব্যাকএন্ড ফোল্ডারের পাথ
+      context: ./DoubtDeskBackend
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "${PORT:-8080}:8080"
     environment:
-      # ডকার নেটওয়ার্কের মাধ্যমে MySQL-এ সংযোগ
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/doubtdesk_db
-      - SPRING_DATASOURCE_USERNAME=doubtdesk_user
-      - SPRING_DATASOURCE_PASSWORD=mi31122004@#
+      - SPRING_DATASOURCE_URL=jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
       - file.upload-dir=/app/uploads
-      - spring.mail.username=majhar322004@gmail.com # application.properties থেকে ENV-তে
-      - spring.mail.password=asgjalnzhzyjosab # application.properties থেকে ENV-তে
-      # ⚠️ এই পাসওয়ার্ডটি (asgjalnzhzyjosab) প্রোডাকশনের জন্য সিক্রেট ম্যানেজার বা .env ফাইলে রাখতে হবে।
-    depends_on:
-      mysql:
-        condition: service_healthy
+      - spring.mail.username=${MAIL_USER}
+      - spring.mail.password=${MAIL_PASS}
     volumes:
-      - backend-uploads:/app/uploads # ফাইল আপলোডের জন্য পার্সিস্টেন্ট ভলিউম
+      - backend-uploads:/app/uploads
 
-  # --- 3. Database Service (MySQL) ---
+  # --- MySQL (Only for Local Development) ---
   mysql:
-    container_name: doubtdesk_mysql
     image: mysql:8.0
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: mi31122004@#
-      MYSQL_DATABASE: doubtdesk_db
-      MYSQL_USER: doubtdesk_user
-      MYSQL_PASSWORD: mi31122004@#
+      MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      MYSQL_DATABASE=${DB_NAME}
+      MYSQL_USER=${DB_USER}
+      MYSQL_PASSWORD=${DB_PASSWORD}
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "${DB_USER}", "-p${DB_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
